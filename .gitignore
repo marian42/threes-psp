@@ -1,0 +1,12 @@
+
+.vscode/
+
+*.PBP
+
+*.o
+
+*.prx
+
+*.elf
+
+*.SFO
