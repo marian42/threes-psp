@@ -124,16 +124,6 @@ constexpr int INSERT_POSITIONS[] = {
 };
 
 int getPieceColor(int piece) {
-    /*
-    if (piece == 1) {
-        return 0x66CCFF;
-    } else if (piece == 2) {
-        return 0xFF6680;
-    } else {
-        return 0xFFFFFF;
-    }
-    */
-    
     if (piece == 1) {
         return 0xFFCC66;
     } else if (piece == 2) {
