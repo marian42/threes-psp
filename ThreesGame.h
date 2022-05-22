@@ -67,14 +67,14 @@ public:
         sceGuBlendFunc(GU_ADD, GU_SRC_ALPHA, GU_ONE_MINUS_SRC_ALPHA, 0, 0);
         sceGuEnable(GU_TEXTURE_2D);
         sceGuTexMode(GU_PSM_8888, 0, 0, 0);
-        sceGuTexImage(0, 512, 512, 512, cards);
+        sceGuTexImage(0, 256, 256, 256, cards);
         sceGuTexFunc(GU_TFX_MODULATE, GU_TCC_RGBA);
         sceGuTexEnvColor(0x000000);
         sceGuClearColor(0xE0E6C7);
         sceGuTexOffset(0.0f, 0.0f);
-        sceGuTexScale(1.0f / 512.0f, 1.0f / 512.0f);
+        sceGuTexScale(1.0f / 256.0f, 1.0f / 256.0f);
         sceGuTexWrap(GU_REPEAT, GU_REPEAT);
-        sceGuTexFilter(GU_LINEAR, GU_LINEAR);
+        sceGuTexFilter(GU_NEAREST, GU_NEAREST);
         sceGuFinish();
         sceGuSync(0,0);
         sceGuDisplay(GU_TRUE);
@@ -187,8 +187,8 @@ public:
         VERT* v = (VERT*)sceGuGetMemory(sizeof(VERT) * 2);
 
         int index = this->grid.Get(cardX, cardY);
-        int tx = (index % 4) * 128;
-        int ty = (index / 4) * 128;
+        int tx = (index % 4) * 64;
+        int ty = (index / 4) * 64;
 
         VERT* v0 = &v[0];
         VERT* v1 = &v[1];
@@ -200,8 +200,8 @@ public:
         v0->y = GRID_Y + y * 64.0f;
         v0->z = 0.0f;
 
-        v1->s = (float)(tx + 128);
-        v1->t = (float)(ty + 128);
+        v1->s = (float)(tx + 64);
+        v1->t = (float)(ty + 64);
         v1->c = 0xFFFFFFFF;
         v1->x = GRID_X + (x + sizeX) * 64.0f;
         v1->y = GRID_Y + (y + sizeY) * 64.0f;
@@ -227,8 +227,8 @@ public:
         v0->y = y;
         v0->z = 0.0f;
 
-        v1->s = 128.0f;
-        v1->t = 128.0f;
+        v1->s = 64.0f;
+        v1->t = 64.0f;
         v1->c = 0xFFFFFFFF;
         v1->x = x + 64.0f;
         v1->y = y + 64.0f;
