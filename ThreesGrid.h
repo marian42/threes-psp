@@ -219,10 +219,13 @@ public:
 
         if (this->highestPiece >= 7 && GetRandomBool() ) {
             if (this->highestPiece >= 8 && GetRandomBool()) {
-                this->AddToDeck(this->highestPiece - GetRandomInt(2, 5));
+                this->lowerstPossibleCard = this->highestPiece - 4;
+                this->highestPossibleCard = this->highestPiece - 2;
             } else {
-                this->AddToDeck(this->highestPiece - GetRandomInt(2, 4));
+                this->lowerstPossibleCard = this->highestPiece - 3;
+                this->highestPossibleCard = this->highestPiece - 2;
             }
+            this->AddToDeck(GetRandomInt(this->lowerstPossibleCard, this->highestPossibleCard + 1));
         }
 
         shuffleArray(this->deck, this->deckCardsRemaining, 20);
@@ -313,6 +316,9 @@ public:
     bool IsGameOver() {
         return !this->possibleMoves[0] && !this->possibleMoves[1] && !this->possibleMoves[2] && !this->possibleMoves[3];    
     }
+
+    int highestPossibleCard;
+    int lowerstPossibleCard;
 
 private:
     void AddToDeck(int piece) {

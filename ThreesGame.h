@@ -411,7 +411,14 @@ public:
 
         float left = 8 - 64 * (1.0f - this->effectAmount);
 
-        this->DrawPreviewCard(this->grid.PeekDeck(), left, 120, opacity);
+        if (this->grid.PeekDeck() < 4) {
+            this->DrawPreviewCard(this->grid.PeekDeck(), left, 120, opacity);
+        } else {
+            int numberOfOptions = this->grid.highestPossibleCard - this->grid.lowerstPossibleCard + 1;
+            for (int i = 0; i < numberOfOptions; i++) {                
+                this->DrawPreviewCard(this->grid.lowerstPossibleCard + i, left, 136 - numberOfOptions * 16 + i * 32, opacity);
+            }
+        }
     }
 
     void DrawPreviewCard(int index, float x, float y, float opacity) {            
