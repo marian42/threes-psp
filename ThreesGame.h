@@ -170,6 +170,14 @@ public:
             }
         }
 
+        for (int x = 0; x < 4; x++) {
+            for (int y = 0; y < 4; y++) {
+                if (this->grid.Get(x, y) < 3 && this->grid.GetPreview(this->previewDirection, x, y) == MoveType::ReceiveMerge) {
+                    drawRedBlueMerge(x, y);
+                }
+            }
+        }
+
 		sceGuFinish();
 		sceGuSync(0, 0);
 
@@ -271,6 +279,123 @@ public:
         sceGumDrawArray(GU_SPRITES, 
             GU_TEXTURE_32BITF | GU_COLOR_8888 | GU_VERTEX_32BITF | GU_TRANSFORM_2D,
             2, 0, v
+        );
+    }
+
+    void drawRedBlueMerge(int cardX, int cardY) {
+        VERT* v = (VERT*)sceGuGetMemory(sizeof(VERT) * 4);
+
+        VERT* v0 = &v[0];
+        VERT* v1 = &v[1];
+        VERT* v2 = &v[2];
+        VERT* v3 = &v[3];
+
+        float moveX = this->previewDirection == Direction::RIGHT ? 1 : (this->previewDirection == Direction::LEFT ? -1 : 0);
+        float moveY = this->previewDirection == Direction::DOWN ? 1 : (this->previewDirection == Direction::UP ? -1 : 0);
+
+        v0->c = 0xFFFFFFFF;
+        v1->c = 0xFFFFFFFF;
+        v2->c = 0xFFFFFFFF;
+        v3->c = 0xFFFFFFFF;
+        v0->z = 0.0f;
+        v1->z = 0.0f;
+        v2->z = 0.0f;
+        v3->z = 0.0f;
+
+        switch (this->previewDirection) {
+            case Direction::RIGHT:
+                v0->s = 192.0f;
+                v0->t = 192.0f;
+                v0->x = GRID_X + cardX * 64.0f;
+                v0->y = GRID_Y + cardY * 64.0f;
+
+                v1->s = 192.0f + this->previewAmount * 32.0f;
+                v1->t = 256.0f;
+                v1->x = GRID_X + cardX * 64.0f + 32.0f * this->previewAmount;
+                v1->y = GRID_Y + cardY * 64.0f + 64.0f;
+
+                v2->s = 256.0f - this->previewAmount * 32.0f;
+                v2->t = 192.0f;
+                v2->x = GRID_X + cardX * 64.0f + 32.0f * this->previewAmount;
+                v2->y = GRID_Y + cardY * 64.0f;
+
+                v3->s = 256.0f;
+                v3->t = 256.0f;
+                v3->x = GRID_X + cardX * 64.0f + 64.0f * this->previewAmount;
+                v3->y = GRID_Y + cardY * 64.0f + 64.0f;
+                break;
+            
+            case Direction::LEFT:
+                v0->s = 256.0f - this->previewAmount * 32.0f;
+                v0->t = 192.0f;
+                v0->x = GRID_X + cardX * 64.0f + 64.0f - 32.0f * this->previewAmount;
+                v0->y = GRID_Y + cardY * 64.0f;
+
+                v1->s = 256.0f;
+                v1->t = 256.0f;
+                v1->x = GRID_X + cardX * 64.0f + 64.0f;
+                v1->y = GRID_Y + cardY * 64.0f + 64.0f;
+
+                v2->s = 192.0f;
+                v2->t = 192.0f;
+                v2->x = GRID_X + cardX * 64.0f + 64.0f - 64.0f * this->previewAmount;
+                v2->y = GRID_Y + cardY * 64.0f;
+
+                v3->s = 192.0f + this->previewAmount * 32.0f;
+                v3->t = 256.0f;
+                v3->x = GRID_X + cardX * 64.0f + 64.0f - 32.0f * this->previewAmount;
+                v3->y = GRID_Y + cardY * 64.0f + 64.0f;
+                break;
+
+            case Direction::DOWN:
+                v0->s = 192.0f;
+                v0->t = 192.0f;
+                v0->x = GRID_X + cardX * 64.0f;
+                v0->y = GRID_Y + cardY * 64.0f;
+
+                v1->s = 256.0f;
+                v1->t = 192.0f + this->previewAmount * 32.0f;
+                v1->x = GRID_X + cardX * 64.0f + 64.0f;
+                v1->y = GRID_Y + cardY * 64.0f + 32.0f * this->previewAmount;
+
+                v2->s = 192.0f;
+                v2->t = 256.0f - this->previewAmount * 32.0f;
+                v2->x = GRID_X + cardX * 64.0f;
+                v2->y = GRID_Y + cardY * 64.0f + 32.0f * this->previewAmount;
+
+                v3->s = 256.0f;
+                v3->t = 256.0f;
+                v3->x = GRID_X + cardX * 64.0f + 64.0f;
+                v3->y = GRID_Y + cardY * 64.0f + 64.0f * this->previewAmount;
+                break;
+            
+            case Direction::UP:
+                v0->s = 192.0f;
+                v0->t = 256.0f - this->previewAmount * 32.0f;
+                v0->x = GRID_X + cardX * 64.0f;
+                v0->y = GRID_Y + cardY * 64.0f + 64.0f - 32.0f * this->previewAmount;
+
+                v1->s = 256.0f;
+                v1->t = 256.0f;
+                v1->x = GRID_X + cardX * 64.0f + 64.0f;
+                v1->y = GRID_Y + cardY * 64.0f + 64.0f;
+
+                v2->s = 192.0f;
+                v2->t = 192.0f;
+                v2->x = GRID_X + cardX * 64.0f;
+                v2->y = GRID_Y + cardY * 64.0f + 64.0f - 64.0f * this->previewAmount;
+
+                v3->s = 256.0f;
+                v3->t = 192.0f + this->previewAmount * 32.0f;
+                v3->x = GRID_X + cardX * 64.0f + 64.0f;
+                v3->y = GRID_Y + cardY * 64.0f + 64.0f - 32.0f * this->previewAmount;
+                break;
+        }
+
+
+        sceGumDrawArray(GU_SPRITES, 
+            GU_TEXTURE_32BITF | GU_COLOR_8888 | GU_VERTEX_32BITF | GU_TRANSFORM_2D,
+            4, 0, v
         );
     }
 
