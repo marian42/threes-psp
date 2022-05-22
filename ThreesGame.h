@@ -43,6 +43,7 @@ public:
     void NewGame() {
         grid.Reset();
         this->previewAmount = 0.0f;
+        this->effectAmount = 0.0f;
     }
 
     void Update() {
@@ -100,7 +101,7 @@ public:
             directionPressed = Direction::LEFT;
             movementButtonPressed = true;
         } else if (buttonsDown & PSP_CTRL_START) {
-            grid.Reset();
+            NewGame();
         }
 
         if (this->waitForButtonRelease) {
@@ -119,6 +120,7 @@ public:
                 this->lastMoveDirection = this->previewDirection;
                 this->previewAmount = 0;
                 this->waitForButtonRelease = true;
+                this->effectAmount = 0.0f;
             }
         } else if (this->previewAmount <= 0) {
             this->previewDirection = directionPressed;
@@ -130,6 +132,13 @@ public:
             this->previewAmount = 0;
         } else if (this->previewAmount > 1.0) {
             this->previewAmount = 1.0;
+        }
+
+        if (this->effectAmount < 1.0f) {
+            this->effectAmount += this->previewAmount > 0.1f ? 0.2f : 0.07f;
+            if (this->effectAmount > 1.0f) {
+                this->effectAmount = 1.0f;
+            }
         }
 
         buttonState = padData.Buttons;
@@ -173,6 +182,7 @@ public:
         float moveY = this->previewDirection == Direction::DOWN ? 1 : (this->previewDirection == Direction::UP ? -1 : 0);
 
         MoveType movementType = this->grid.GetPreview(this->previewDirection, cardX, cardY);
+        CardEffect effect = this->grid.GetEffect(cardX, cardY);
 
         float x = cardX;
         float y = cardY;
@@ -183,10 +193,34 @@ public:
             x += moveX * this->previewAmount;
             y += moveY * this->previewAmount;
         }
+
+        if (effect == CardEffect::SlideIn) {
+            float f = (this->effectAmount + 0.4f) / 1.4f;
+            f = (1.0 - f * f);
+            x -= f * 2.0f * moveX;
+            y -= f * 2.0f * moveY;
+        } else if (effect == CardEffect::Merged) {
+            float size = abs(cos(this->effectAmount * 3.14159));
+            sizeX *= size;
+            x += (1.0f - size) * 0.5f;
+        } else if (effect == CardEffect::NewCard) {
+            float size = sin(this->effectAmount * 3.141459) * 0.45 + this->effectAmount;
+            sizeX *= size;
+            x += (1.0f - size) * 0.5f;
+            sizeY *= size;
+            y += (1.0f - size) * 0.5f;
+        }
         
         VERT* v = (VERT*)sceGuGetMemory(sizeof(VERT) * 2);
 
         int index = this->grid.Get(cardX, cardY);
+        if (effect == CardEffect::Merged && this->effectAmount < 0.5f) {
+            index--;
+            if (index == 2) {
+                index = 15;
+            }
+        }
+
         int tx = (index % 4) * 64;
         int ty = (index / 4) * 64;
 
@@ -256,6 +290,7 @@ private:
     Direction lastMoveDirection;
 
     float previewAmount = 0;
+    float effectAmount = 0;
 
     bool waitForButtonRelease = false;
 };

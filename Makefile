@@ -7,7 +7,7 @@ ASFLAGS = $(CFLAGS)
 
 LIBDIR =
 LDFLAGS =
-LIBS= -lpspgum -lpspgu
+LIBS= -lpspgum -lpspgu -lm
  
 EXTRA_TARGETS = EBOOT.PBP
 PSP_EBOOT_TITLE = Threes

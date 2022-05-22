@@ -40,6 +40,13 @@ struct CardMove {
     constexpr CardMove() : from(0), to(0) { }
 };
 
+enum CardEffect {
+    None,
+    Merged,
+    SlideIn,
+    NewCard
+};
+
 constexpr const CardMove MOVES[] = {
     // RIGHT
     CardMove(INDEX(2, 0), INDEX(3, 0)),
@@ -146,6 +153,8 @@ private:
     MoveType movePreviews[4 * 16];
 
     int highestPiece;
+
+    CardEffect effects[16];
 public:
 
     void Reset() {
@@ -155,11 +164,15 @@ public:
             if (i < 9) {
                 this->data[i] = this->TakeFromDeck();
             } else {
-                this->data[i] = 0;
+                this->data[i] = 0;            
             }
         }
 
         shuffleArray(this->data, 16, 32);
+
+        for (int i = 0; i < 16; i++) {
+            this->effects[i] = this->data[i] == 0 ? CardEffect::None : CardEffect::NewCard;
+        }
 
         UpdatePreviews();
     }
@@ -229,6 +242,10 @@ public:
     }
 
     void ApplyMove(Direction direction) {
+        for (int i = 0; i < 16; i++) {
+            this->effects[i] = CardEffect::None;
+        }
+
         for (int i = 0; i < 12; i++) {
             CardMove move = MOVES[direction * 12 + i];
 
@@ -246,12 +263,14 @@ public:
             } else if (from + to == 3) {
                 to = 3;
                 from = 0;
+                this->effects[move.to] = CardEffect::Merged;
             } else if (from == to && from >= 3) {
                 to++;
                 from = 0;
                 if (to > this->highestPiece) {
                     this->highestPiece = to;
                 }
+                this->effects[move.to] = CardEffect::Merged;
             }
         }
 
@@ -262,6 +281,7 @@ public:
             int position = INSERT_POSITIONS[4 * direction + insertIndices[i]];
             if (this->data[position] == 0) {
                 this->data[position] = this->TakeFromDeck();
+                this->effects[position] = CardEffect::SlideIn;
                 break;
             }
         }
@@ -284,6 +304,10 @@ public:
 
     bool IsMovePossible(Direction direction) {
         return this->possibleMoves[direction];
+    }
+
+    CardEffect GetEffect(int x, int y) {
+        return this->effects[INDEX(x, y)];
     }
 
 private:
