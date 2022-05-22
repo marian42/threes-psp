@@ -23,10 +23,11 @@ enum Direction {
 };
 
 enum MoveType {
-    Empty,
+    Squeeze,
     Stay,
     Move,
-    MoveMerge
+    MoveMerge,
+    ReceiveMerge
 };
 
 #define INDEX(x, y) x * 4 + y
@@ -159,6 +160,8 @@ public:
         }
 
         shuffleArray(this->data, 16, 32);
+
+        UpdatePreviews();
     }
 
     void DebugDraw(int globalX, int globalY) {
@@ -262,6 +265,8 @@ public:
                 break;
             }
         }
+
+        UpdatePreviews();
     }
 
     int GetScore() {
@@ -273,9 +278,54 @@ public:
         return result;
     }
 
+    MoveType GetPreview(Direction direction, int x, int y) {
+        return this->movePreviews[direction * 16 + INDEX(x, y)];
+    }
+
+    bool IsMovePossible(Direction direction) {
+        return this->possibleMoves[direction];
+    }
+
 private:
     void AddToDeck(int piece) {
         this->deck[this->deckCardsRemaining] = piece;
         this->deckCardsRemaining++;
+    }
+
+    void UpdatePreviews() {
+        for (int i = 0; i < 4 * 16; i++) {
+            this->movePreviews[i] = MoveType::Squeeze;
+        }
+
+        for (int i = 0; i < 4; i++) {
+            this->possibleMoves[i] = false;
+        }
+
+        for (int direction = 0; direction < 4; direction++) {
+            for (int i = 0; i < 12; i++) {
+                CardMove move = MOVES[direction * 12 + i];
+                int fromIndex = direction * 16 + move.from;
+                int toIndex = direction * 16 + move.to;
+
+                int from = this->data[move.from];
+
+                if (from == 0) {
+                    continue;
+                }
+
+                int to = this->data[move.to];
+
+                if (to == 0 || this->movePreviews[toIndex] == MoveType::Move || this->movePreviews[toIndex] == MoveType::MoveMerge) {
+                    this->movePreviews[fromIndex] = MoveType::Move;
+                    this->possibleMoves[direction] = true;
+                } else if ((from + to == 3 || (from == to && from >= 3))
+                    && this->movePreviews[toIndex] != MoveType::Move
+                    && this->movePreviews[toIndex] != MoveType::MoveMerge) {
+                    this->movePreviews[fromIndex] = MoveType::MoveMerge;
+                    this->movePreviews[toIndex] = MoveType::ReceiveMerge;
+                    this->possibleMoves[direction] = true;
+                }
+            }
+        }
     }
 };
