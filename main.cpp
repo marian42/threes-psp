@@ -4,7 +4,7 @@
 #include "utils.h"
  
 PSP_MODULE_INFO("Tutorial", 0, 1, 0);
-
+PSP_MAIN_THREAD_ATTR(PSP_THREAD_ATTR_USER);
 
 
 int exit_callback(int arg1, int arg2, void* common){
@@ -20,16 +20,12 @@ int CallbackThread(SceSize args, void* argp) {
 	return 0;
 }
  
-int SetupCallbacks(void) {
+int main() {
 	int thid = sceKernelCreateThread("update_thread", CallbackThread, 0x11, 0xFA0, 0, 0);
 	if (thid >= 0) {
 		sceKernelStartThread(thid, 0, 0);
 	}
-	return thid;
-}
- 
-int main() {
-	SetupCallbacks();
+
 	initializeRNG();
 	
 	sceCtrlSetSamplingCycle(0);

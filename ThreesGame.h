@@ -16,11 +16,18 @@
 #define SCR_WIDTH (480)
 #define SCR_HEIGHT (272)
 #define FRAME_SIZE (BUF_WIDTH * SCR_HEIGHT * 4)
+#define ZBUF_SIZE (BUF_WIDTH SCR_HEIGHT * 2)
 
 static unsigned int __attribute__((aligned(16))) list[262144];
 
 constexpr int GRID_X = 112;
 constexpr int GRID_Y = 8;
+
+typedef struct {
+    float s, t;
+    unsigned int c;
+    float x, y, z;
+} VERT;
 
 class ThreesGame {
 public:
@@ -162,12 +169,6 @@ public:
     }
 
     void drawCard(int cardX, int cardY) {
-        typedef struct {
-            float s, t;
-            unsigned int c;
-            float x, y, z;
-        } VERT;
-
         float moveX = this->previewDirection == Direction::RIGHT ? 1 : (this->previewDirection == Direction::LEFT ? -1 : 0);
         float moveY = this->previewDirection == Direction::DOWN ? 1 : (this->previewDirection == Direction::UP ? -1 : 0);
 
@@ -214,12 +215,6 @@ public:
 
     
     void drawSlot(float x, float y) {
-        typedef struct {
-            float s, t;
-            unsigned int c;
-            float x, y, z;
-        } VERT;
-
         VERT* v = (VERT*)sceGuGetMemory(sizeof(VERT) * 2);
 
         VERT* v0 = &v[0];
