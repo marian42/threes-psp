@@ -178,6 +178,10 @@ public:
             }
         }
 
+        if (!this->grid.IsGameOver()) {
+            DrawNextCard();
+        }
+
 		sceGuFinish();
 		sceGuSync(0, 0);
 
@@ -392,10 +396,53 @@ public:
                 break;
         }
 
-
         sceGumDrawArray(GU_SPRITES, 
             GU_TEXTURE_32BITF | GU_COLOR_8888 | GU_VERTEX_32BITF | GU_TRANSFORM_2D,
             4, 0, v
+        );
+    }
+
+    void DrawNextCard() {
+        float opacity = this->effectAmount;
+
+        if (this->previewAmount > 0.0f && this->grid.IsMovePossible(this->previewDirection)) {
+            opacity = min(opacity, 1.0f - this->previewAmount);
+        }
+
+        float left = 8 - 64 * (1.0f - this->effectAmount);
+
+        this->DrawPreviewCard(this->grid.PeekDeck(), left, 120, opacity);
+    }
+
+    void DrawPreviewCard(int index, float x, float y, float opacity) {            
+        VERT* v = (VERT*)sceGuGetMemory(sizeof(VERT) * 2);
+
+        char opacityByte = (char)(opacity * 255);
+        int color = 0x00FFFFFF | (opacityByte << 24);
+
+        int tx = (index % 4) * 64;
+        int ty = (index / 4) * 64;
+
+        VERT* v0 = &v[0];
+        VERT* v1 = &v[1];
+        
+        v0->s = (float)(tx);
+        v0->t = (float)(ty);
+        v0->c = color;
+        v0->x = x;
+        v0->y = y;
+        v0->z = 0.0f;
+
+        v1->s = (float)(tx + 64);
+        v1->t = (float)(ty + 64);
+        v1->c = color;
+        v1->x = x + 32.0f;
+        v1->y = y + 32.0f;
+        v1->z = 0.0f;
+
+        sceGumDrawArray(GU_SPRITES, 
+            GU_TEXTURE_32BITF | GU_COLOR_8888 | GU_VERTEX_32BITF | GU_TRANSFORM_2D,
+            2, 0, v
         );
     }
 

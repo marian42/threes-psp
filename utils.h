@@ -32,4 +32,8 @@ void shuffleArray(int* array, int arraySize, int numberOfSwaps) {
         array[index2] = swap;
     }
 }
+
+float min(float a, float b) {
+    return a < b ? a : b;
+}
  

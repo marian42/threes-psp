@@ -309,6 +309,10 @@ public:
     CardEffect GetEffect(int x, int y) {
         return this->effects[INDEX(x, y)];
     }
+    
+    bool IsGameOver() {
+        return !this->possibleMoves[0] && !this->possibleMoves[1] && !this->possibleMoves[2] && !this->possibleMoves[3];    
+    }
 
 private:
     void AddToDeck(int piece) {
