@@ -1,5 +1,5 @@
 TARGET = Threes
-OBJS = cards.c main.o
+OBJS = img/cards.c main.o
  
 CFLAGS = 
 CXXFLAGS = $(CFLAGS) -std=c++14 -fno-rtti
@@ -21,5 +21,5 @@ PSP_EBOOT_ICON = ICON0.PNG
 PSPSDK=$(shell psp-config --pspsdk-path)
 include $(PSPSDK)/lib/build.mak
 
-cards.c : cards.raw
-		bin2c cards.raw cards.c cards
+img/cards.c : img/cards.raw
+		bin2c img/cards.raw img/cards.c cards

@@ -10,7 +10,7 @@
 
 #include <math.h>
 
-#include "cards.c"
+#include "img/cards.c"
 
 #define BUF_WIDTH (512)
 #define SCR_WIDTH (480)
