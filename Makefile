@@ -1,5 +1,5 @@
 TARGET = Threes
-OBJS = img/cards.c main.o
+OBJS = img/cards.c img/spritesheet.c main.o
  
 CFLAGS = -O2
 CXXFLAGS = $(CFLAGS) -std=c++14 -fno-rtti -fno-exceptions
@@ -18,3 +18,5 @@ include $(PSPSDK)/lib/build.mak
 
 img/cards.c : img/cards.raw
 		bin2c img/cards.raw img/cards.c cards
+img/spritesheet.c : img/spritesheet.raw
+		bin2c img/spritesheet.raw img/spritesheet.c spritesheet

@@ -6,7 +6,9 @@
 #include <pspdisplay.h>
 #include <pspdebug.h>
 #include "ThreesGrid.h"
+#include "text.h"
 #include <pspctrl.h>
+#include <cstdio>
 
 #include <math.h>
 
@@ -81,6 +83,10 @@ public:
         sceGuDisplay(GU_TRUE);
     }
 
+    void useCardsTexture() {
+        sceGuTexImage(0, 256, 256, 256, cards);
+    }
+
     void UpdateGameplay() {
         sceCtrlReadBufferPositive(&padData,1);
         int buttonsDown = ~buttonState & padData.Buttons;
@@ -148,6 +154,8 @@ public:
         sceGuStart(GU_DIRECT, list);
 		sceGuClear(GU_COLOR_BUFFER_BIT);
 
+        useCardsTexture();
+
         for (int x = 0; x < 4; x++) {
             for (int y = 0; y < 4; y++) {
                 drawSlot(GRID_X + x * 64, GRID_Y + y * 64);
@@ -181,6 +189,13 @@ public:
         if (!this->grid.IsGameOver()) {
             DrawNextCard();
         }
+
+        char scoreString[10];
+
+        sprintf(scoreString, "%0d", this->grid.GetScore());
+
+        useSpritesheet();
+        drawString(scoreString, 410, 20, 0xFF8167FF);
 
 		sceGuFinish();
 		sceGuSync(0, 0);

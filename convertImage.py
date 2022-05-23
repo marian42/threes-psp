@@ -1,7 +1,8 @@
 from PIL import Image
 import numpy as np
 
-filename = "img/cards.png"
+filenames = ["img/cards.png", "img/spritesheet.png"]
 
-array = np.array(Image.open(filename))
-array.tofile(filename.replace(".png", ".raw"))
+for filename in filenames:
+    array = np.array(Image.open(filename))
+    array.tofile(filename.replace(".png", ".raw"))
