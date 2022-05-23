@@ -249,6 +249,9 @@ public:
             this->effects[i] = CardEffect::None;
         }
 
+        bool horizontalMovement = direction == Direction::LEFT || direction == Direction::RIGHT;
+        bool insertAllowed[4] = {false, false, false, false};
+
         for (int i = 0; i < 12; i++) {
             CardMove move = MOVES[direction * 12 + i];
 
@@ -259,6 +262,7 @@ public:
             }
 
             int& to = this->data[move.to];
+            bool hasMoved = true;
 
             if (to == 0) {
                 to = from;
@@ -274,6 +278,12 @@ public:
                     this->highestPiece = to;
                 }
                 this->effects[move.to] = CardEffect::Merged;
+            } else {
+                hasMoved = false;
+            }
+
+            if (hasMoved) {                
+                insertAllowed[horizontalMovement ? move.from % 4 : move.from / 4] = true;
             }
         }
 
@@ -282,7 +292,7 @@ public:
 
         for (int i = 0; i < 4; i++) {
             int position = INSERT_POSITIONS[4 * direction + insertIndices[i]];
-            if (this->data[position] == 0) {
+            if (this->data[position] == 0 && insertAllowed[horizontalMovement ? position % 4 : position / 4]) {
                 this->data[position] = this->TakeFromDeck();
                 this->effects[position] = CardEffect::SlideIn;
                 break;
