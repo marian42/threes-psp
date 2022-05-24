@@ -46,6 +46,7 @@ public:
         grid.Reset();
         this->previewAmount = 0.0f;
         this->effectAmount = 0.0f;
+        this->score = this->grid.GetScore();
     }
 
     void Update() {
@@ -192,10 +193,16 @@ public:
 
         char scoreString[10];
 
-        sprintf(scoreString, "%0d", this->grid.GetScore());
+        int actualScore = this->grid.GetScore();
+
+        if (actualScore > this->score) {
+            this->score += (actualScore - this->score) / 16 + 1;
+        }
+
+        sprintf(scoreString, "%0d", this->score);
 
         useSpritesheet();
-        drawString(scoreString, 410, 20, 0xFF8167FF);
+        drawString(scoreString, 470, 8, 0xFF7E8271, TextAlignment::Right);
 
 		sceGuFinish();
 		sceGuSync(0, 0);
@@ -487,4 +494,6 @@ private:
     float effectAmount = 0;
 
     bool waitForButtonRelease = false;
+
+    int score;
 };

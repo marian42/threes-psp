@@ -7,11 +7,18 @@ static int charPosition[] = {0, 6, 12, 19, 33, 45, 60, 74, 78, 84, 92, 101, 113,
 static int charWidth[] = {6, 6, 7, 14, 12, 15, 14, 4, 6, 8, 9, 12, 5, 10, 3, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 5, 4, 10, 10, 8, 10, 17, 15, 14, 13, 14, 12, 12, 14, 15, 4, 12, 14, 12, 17, 14, 14, 13, 14, 13, 12, 12, 13, 13, 19, 12, 11, 13, 4, 8, 8, 9, 10, 7, 11, 11, 10, 10, 11, 7, 12, 12, 3, 8, 11, 6, 18, 12, 12, 11, 12, 9, 10, 8, 11, 10, 17, 11, 11, 10, 9, 4, 9};
 
 
+enum TextAlignment {
+	Left,
+	Right,
+	Center
+};
+
+
 void useSpritesheet() {
 	sceGuTexImage(0, 256, 256, 256, spritesheet);
 }
 
-void drawString(const char* text, int x, int y, unsigned int color) {
+void drawString(const char* text, int x, int y, unsigned int color, TextAlignment alignment = TextAlignment::Left) {
 	int len = (int)strlen(text);
 
 	constexpr int CHAR_HEIGHT = 26;
@@ -24,10 +31,26 @@ void drawString(const char* text, int x, int y, unsigned int color) {
 
 	VERT* v = (VERT*)sceGuGetMemory(sizeof(VERT) * 2 * len);
 
-	int i;
-	for(i = 0; i < len; i++) {
+	if (alignment != TextAlignment::Left) {
+		int totalWidth = 0;
+		for (int i = 0; i < len; i++) {
+			unsigned char c = (unsigned char)text[i];
+			if(c < 32 || c >= 125) {
+				c = 0;
+			}
+			totalWidth += charWidth[c - 32];
+		}
+
+		if (alignment == TextAlignment::Right) {
+			x -= totalWidth;
+		} else {
+			x -= totalWidth / 2;
+		}
+	}
+
+	for (int i = 0; i < len; i++) {
 		unsigned char c = (unsigned char)text[i];
-		if(c < 32 || c >= 125) {
+		if (c < 32 || c >= 125) {
 			c = 0;
 		}
 
