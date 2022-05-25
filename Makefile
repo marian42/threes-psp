@@ -1,5 +1,5 @@
 TARGET = Threes
-OBJS = img/cards.c img/spritesheet.c main.o
+OBJS = img/cards.c img/spritesheet.c ThreesGame.o input.o Application.o main.o
  
 CFLAGS = -O2
 CXXFLAGS = $(CFLAGS) -std=c++14 -fno-rtti -fno-exceptions

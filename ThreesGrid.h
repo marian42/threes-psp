@@ -7,7 +7,7 @@ constexpr int DEFAULT_DECK[] = {1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3};
 constexpr int DEFAULT_DECK_SIZE = 12;
 constexpr int SCORE[] = {0, 0, 0, 3, 9, 27, 81, 243, 729, 2187, 6561, 19683, 59049, 177147, 531441 };
 
-int formatPiece(int piece) {
+static int formatPiece(int piece) {
     if (piece <= 2) {
         return piece;
     } else {
@@ -131,7 +131,7 @@ constexpr int INSERT_POSITIONS[] = {
     INDEX(3, 3),
 };
 
-int getPieceColor(int piece) {
+static int getPieceColor(int piece) {
     if (piece == 1) {
         return 0xFFCC66;
     } else if (piece == 2) {

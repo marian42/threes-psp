@@ -25,5 +25,3 @@ private:
 
     static PSPInput instance;
 };
-
-PSPInput PSPInput::instance;
