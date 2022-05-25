@@ -1,6 +1,6 @@
 #include <pspkernel.h>
 #include <pspdebug.h>
-#include "ThreesGame.h"
+#include "Application.h"
 #include "utils.h"
  
 PSP_MODULE_INFO("Tutorial", 0, 1, 0);
@@ -31,8 +31,7 @@ int main() {
 	sceCtrlSetSamplingCycle(0);
 	sceCtrlSetSamplingMode(PSP_CTRL_MODE_ANALOG);
 
-	ThreesGame game;
-    game.Run();
+	Application::instance.Run();
 
 	return 0;
 }

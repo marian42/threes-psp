@@ -7,12 +7,11 @@
 #include <pspdebug.h>
 #include "ThreesGrid.h"
 #include "text.h"
-#include <pspctrl.h>
+#include "utils.h"
+#include "input.h"
 #include <cstdio>
 
 #include <math.h>
-
-#include "img/cards.c"
 
 #define BUF_WIDTH (512)
 #define SCR_WIDTH (480)
@@ -33,15 +32,6 @@ typedef struct {
 
 class ThreesGame {
 public:
-    void Run() {
-        Initialize();
-        NewGame();
-
-        while (true) {
-            Update();
-        }
-    }
-
     void NewGame() {
         grid.Reset();
         this->previewAmount = 0.0f;
@@ -54,66 +44,27 @@ public:
         Draw();
     }
 
-    void Initialize() {
-        sceGuInit();
-        sceGuStart(GU_DIRECT, list);
-        sceGuDrawBuffer(GU_PSM_8888,(void*)0,BUF_WIDTH);
-        sceGuDispBuffer(SCR_WIDTH,SCR_HEIGHT,(void*)0x88000,BUF_WIDTH);
-        sceGuDepthBuffer((void*)0x110000,BUF_WIDTH);
-        sceGuOffset(2048 - (SCR_WIDTH/2),2048 - (SCR_HEIGHT/2));
-        sceGuViewport(2048,2048,SCR_WIDTH,SCR_HEIGHT);
-        sceGuDepthRange(0xc350,0x2710);
-        sceGuScissor(0,0,SCR_WIDTH,SCR_HEIGHT);
-        sceGuEnable(GU_SCISSOR_TEST);
-        sceGuDisable(GU_DEPTH_TEST);
-        sceGuShadeModel(GU_SMOOTH);
-        sceGuEnable(GU_BLEND);
-        sceGuBlendFunc(GU_ADD, GU_SRC_ALPHA, GU_ONE_MINUS_SRC_ALPHA, 0, 0);
-        sceGuEnable(GU_TEXTURE_2D);
-        sceGuTexMode(GU_PSM_8888, 0, 0, 0);
-        sceGuTexImage(0, 256, 256, 256, cards);
-        sceGuTexFunc(GU_TFX_MODULATE, GU_TCC_RGBA);
-        sceGuTexEnvColor(0x000000);
-        sceGuClearColor(0xE0E6C7);
-        sceGuTexOffset(0.0f, 0.0f);
-        sceGuTexScale(1.0f / 256.0f, 1.0f / 256.0f);
-        sceGuTexWrap(GU_REPEAT, GU_REPEAT);
-        sceGuTexFilter(GU_NEAREST, GU_NEAREST);
-        sceGuFinish();
-        sceGuSync(0,0);
-        sceGuDisplay(GU_TRUE);
-    }
-
-    void useCardsTexture() {
-        sceGuTexImage(0, 256, 256, 256, cards);
-    }
-
     void UpdateGameplay() {
-        sceCtrlReadBufferPositive(&padData,1);
-        int buttonsDown = ~buttonState & padData.Buttons;
-
         bool movementButtonPressed = false;
         Direction directionPressed;
 
-        if (padData.Buttons & PSP_CTRL_UP) {
+        if (PSPInput::GetButtonPressed(PSP_CTRL_UP)) {
             directionPressed = Direction::UP;
             movementButtonPressed = true;
-        } else if (padData.Buttons & PSP_CTRL_RIGHT) {
+        } else if (PSPInput::GetButtonPressed(PSP_CTRL_RIGHT)) {
             directionPressed = Direction::RIGHT;
             movementButtonPressed = true;
-        } else if (padData.Buttons & PSP_CTRL_DOWN) {
+        } else if (PSPInput::GetButtonPressed(PSP_CTRL_DOWN)) {
             directionPressed = Direction::DOWN;
             movementButtonPressed = true;
-        } else if (padData.Buttons & PSP_CTRL_LEFT) {            
+        } else if (PSPInput::GetButtonPressed(PSP_CTRL_LEFT)) {            
             directionPressed = Direction::LEFT;
             movementButtonPressed = true;
-        } else if (buttonsDown & PSP_CTRL_START) {
-            NewGame();
         }
 
         if (this->waitForButtonRelease) {
             movementButtonPressed = false;
-            if ((padData.Buttons & (PSP_CTRL_DOWN | PSP_CTRL_LEFT | PSP_CTRL_UP | PSP_CTRL_RIGHT)) == 0) {
+            if (!PSPInput::GetButtonPressed(PSP_CTRL_DOWN | PSP_CTRL_LEFT | PSP_CTRL_UP | PSP_CTRL_RIGHT)) {
                 this->waitForButtonRelease = false;
             }
         }
@@ -147,14 +98,9 @@ public:
                 this->effectAmount = 1.0f;
             }
         }
-
-        buttonState = padData.Buttons;
     }
 
     void Draw() {
-        sceGuStart(GU_DIRECT, list);
-		sceGuClear(GU_COLOR_BUFFER_BIT);
-
         useCardsTexture();
 
         for (int x = 0; x < 4; x++) {
@@ -203,12 +149,6 @@ public:
 
         useSpritesheet();
         drawString(scoreString, 470, 8, 0xFF7E8271, TextAlignment::Right);
-
-		sceGuFinish();
-		sceGuSync(0, 0);
-
-		sceDisplayWaitVblankStart();
-		sceGuSwapBuffers();
     }
 
     void drawCard(int cardX, int cardY) {
@@ -483,9 +423,6 @@ public:
 
 private:
     ThreesGrid grid;
-
-    struct SceCtrlData padData;
-    int buttonState = 0;
 
     Direction previewDirection;
     Direction lastMoveDirection;

@@ -1,11 +1,18 @@
 #pragma once
 
 #include <time.h>
- 
+#include "img/cards.c"
+
+#define HEXCOLOR(c) (0xFF000000 | (c & 0x000000FF) << 16 | (c & 0x00FF0000) >> 16 | c & 0x0000FF00)
+
 SceKernelUtilsMt19937Context sceKernelUtilsMt19937Context;
 
 void initializeRNG() {
  	sceKernelUtilsMt19937Init(&sceKernelUtilsMt19937Context, time(NULL));
+}
+
+void useCardsTexture() {
+    sceGuTexImage(0, 256, 256, 256, cards);
 }
 
 bool GetRandomBool() {
