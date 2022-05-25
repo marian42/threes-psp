@@ -32,7 +32,7 @@ void ThreesGame::UpdateGameplay() {
         movementButtonPressed = true;
     }
 
-    if (PSPInput::GetButtonDown(PSP_CTRL_CROSS) && grid.IsGameOver()) {
+    if (PSPInput::GetButtonDown(PSP_CTRL_CROSS | PSP_CTRL_START) && grid.IsGameOver()) {
         Application::instance.SwitchScreen(Screen::GameComplete);
     }
 
@@ -119,7 +119,7 @@ void ThreesGame::Draw() {
         this->score += (actualScore - this->score) / 16 + 1;
     }
 
-    sprintf(scoreString, "%0d", this->score);
+    sprintf(scoreString, "%d", this->score);
 
     useSpritesheet();
     drawString(scoreString, 470, 8, 0xFF7E8271, TextAlignment::Right);

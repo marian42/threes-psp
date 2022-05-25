@@ -4,6 +4,7 @@
 #include <pspgu.h>
 #include <pspgum.h>
 #include <pspdisplay.h>
+#include <cstdio>
 
 #include "text.h"
 
@@ -59,9 +60,15 @@ void Application::Update() {
                 SwitchScreen(Screen::PauseMenu);
                 pauseMenuIndex = 0;
             }
+            if (PSPInput::GetButtonDown(PSP_CTRL_TRIANGLE)) {
+                SwitchScreen(Screen::GameComplete);
+            }
             break;
         case Screen::PauseMenu:
             DoPauseMenu();
+            break;
+        case Screen::GameComplete:
+            DoGameOverScreen();
             break;
     }
 
@@ -106,8 +113,29 @@ void Application::DoPauseMenu() {
     }
 
     useSpritesheet();
-    drawString("Game paused", 240, 10, HEXCOLOR(0x000000), TextAlignment::Center);
+    drawString("Threes", 240, 10, HEXCOLOR(0x000000), TextAlignment::Center);
     for (int i = 0; i < PAUSE_MENU_ITEM_COUNT; i++) {
-        drawString(PAUSE_MENU[i], 240, 60 + 30 * i, (pauseMenuIndex == i) ? HEXCOLOR(0x01CCFE) : HEXCOLOR(0x75555B), TextAlignment::Center);
+        drawString(PAUSE_MENU[i], 240, 60 + 32 * i, (pauseMenuIndex == i) ? HEXCOLOR(0x01CCFE) : HEXCOLOR(0x75555B), TextAlignment::Center);
     }
+}
+
+void Application::DoGameOverScreen() {
+    if (PSPInput::GetButtonDown(PSP_CTRL_START | PSP_CTRL_CIRCLE | PSP_CTRL_CROSS)) {
+        this->game.NewGame();
+        SwitchScreen(Screen::Game);
+    }
+
+    useSpritesheet();
+    drawString("Game over", 240, 10, HEXCOLOR(0x000000), TextAlignment::Center);
+
+    drawString("Score:", 120, 90, HEXCOLOR(0x018BAA), TextAlignment::Left);
+    
+    char scoreString[10];
+
+    sprintf(scoreString, "%d", this->game.GetScore());
+    drawString(scoreString, 360, 90, HEXCOLOR(0xFF002E), TextAlignment::Right);
+
+    
+    drawString("Highscore:", 120, 130, HEXCOLOR(0x018BAA), TextAlignment::Left);
+    drawString(scoreString, 360, 130, HEXCOLOR(0xFF002E), TextAlignment::Right);
 }

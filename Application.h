@@ -41,4 +41,6 @@ private:
     int pauseMenuIndex = 0;
 
     void DoPauseMenu();
+
+    void DoGameOverScreen();
 };

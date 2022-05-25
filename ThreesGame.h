@@ -33,6 +33,10 @@ public:
 
     void DebugDraw();
 
+    int GetScore() {
+        return this->grid.GetScore();
+    }
+
 private:
     ThreesGrid grid;
 
