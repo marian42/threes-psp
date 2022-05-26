@@ -10,6 +10,12 @@ enum Screen {
     Settings
 };
 
+
+struct Stats {
+    int highscore = 0;
+};
+
+
 class Application {
 
 public:
@@ -29,10 +35,20 @@ public:
 
     void SwitchScreen(Screen newScreen) {
         this->currentScreen = newScreen;
+
+        switch (newScreen) {
+            case Screen::PauseMenu:
+                pauseMenuIndex = 0;
+                break;
+            case Screen::GameComplete:
+                OnGameComplete();
+                break;
+        }
     }
 
-
     static Application instance;
+
+    Stats stats;
 private:
     Screen currentScreen;
     
@@ -43,4 +59,6 @@ private:
     void DoPauseMenu();
 
     void DoGameOverScreen();
+
+    void OnGameComplete();
 };

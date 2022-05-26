@@ -58,7 +58,6 @@ void Application::Update() {
 
             if (PSPInput::GetButtonDown(PSP_CTRL_START)) {
                 SwitchScreen(Screen::PauseMenu);
-                pauseMenuIndex = 0;
             }
             if (PSPInput::GetButtonDown(PSP_CTRL_TRIANGLE)) {
                 SwitchScreen(Screen::GameComplete);
@@ -130,12 +129,23 @@ void Application::DoGameOverScreen() {
 
     drawString("Score:", 120, 90, HEXCOLOR(0x018BAA), TextAlignment::Left);
     
+    int score = this->game.GetScore();
+
     char scoreString[10];
 
-    sprintf(scoreString, "%d", this->game.GetScore());
+    sprintf(scoreString, "%d", score);
     drawString(scoreString, 360, 90, HEXCOLOR(0xFF002E), TextAlignment::Right);
 
+    char highscoreString[10];
+    sprintf(highscoreString, "%d", this->stats.highscore);
     
     drawString("Highscore:", 120, 130, HEXCOLOR(0x018BAA), TextAlignment::Left);
-    drawString(scoreString, 360, 130, HEXCOLOR(0xFF002E), TextAlignment::Right);
+    drawString(highscoreString, 360, 130, score == this->stats.highscore ? HEXCOLOR(0xFF002E) : HEXCOLOR(0x7E7E7E), TextAlignment::Right);
+}
+
+
+void Application::OnGameComplete() {
+    if (this->game.GetScore() > this->stats.highscore) {
+        this->stats.highscore = this->game.GetScore();
+    }
 }
