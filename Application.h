@@ -48,8 +48,11 @@ public:
 
     static Application instance;
 
+    static SceKernelUtilsMt19937Context sceKernelUtilsMt19937Context;
+
     Stats stats;
 private:
+
     Screen currentScreen;
     
     ThreesGame game;

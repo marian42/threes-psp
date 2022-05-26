@@ -16,6 +16,8 @@
 
 Application Application::instance;
 
+SceKernelUtilsMt19937Context Application::sceKernelUtilsMt19937Context;
+
 void Application::Initialize() {
     sceGuInit();
     sceGuStart(GU_DIRECT, list);
