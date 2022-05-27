@@ -35,6 +35,9 @@ void ThreesGame::UpdateGameplay() {
     if (PSPInput::GetButtonDown(PSP_CTRL_CROSS | PSP_CTRL_START) && grid.IsGameOver()) {
         Application::instance.SwitchScreen(Screen::GameComplete);
     }
+    if (PSPInput::GetButtonDown(PSP_CTRL_START)) {
+        Application::instance.SwitchScreen(Screen::PauseMenu);
+    }
 
     if (this->waitForButtonRelease) {
         movementButtonPressed = false;

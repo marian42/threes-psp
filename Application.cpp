@@ -57,10 +57,6 @@ void Application::Update() {
     switch (currentScreen) {
         case Screen::Game:
             game.Update();
-
-            if (PSPInput::GetButtonDown(PSP_CTRL_START)) {
-                SwitchScreen(Screen::PauseMenu);
-            }
             if (PSPInput::GetButtonDown(PSP_CTRL_TRIANGLE)) {
                 SwitchScreen(Screen::GameComplete);
             }
