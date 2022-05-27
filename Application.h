@@ -38,7 +38,7 @@ public:
 
         switch (newScreen) {
             case Screen::PauseMenu:
-                pauseMenuIndex = 0;
+                menuIndex = 0;
                 break;
             case Screen::GameComplete:
                 OnGameComplete();
@@ -57,7 +57,7 @@ private:
     
     ThreesGame game;
 
-    int pauseMenuIndex = 0;
+    int menuIndex = 0;
 
     void DoPauseMenu();
 

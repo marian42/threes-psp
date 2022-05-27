@@ -86,23 +86,24 @@ void Application::DoPauseMenu() {
         "Restart",
         "Options",
         "Stats",
-        "About"
+        "About",
+        "Quit"
     };
-    constexpr int PAUSE_MENU_ITEM_COUNT = 5;
+    constexpr int PAUSE_MENU_ITEM_COUNT = 6;
 
     if (PSPInput::GetButtonDown(PSP_CTRL_START | PSP_CTRL_CIRCLE)) {
         SwitchScreen(Screen::Game);
     }
 
     if (PSPInput::GetButtonDown(PSP_CTRL_UP)) {
-        pauseMenuIndex = (pauseMenuIndex + PAUSE_MENU_ITEM_COUNT - 1) % PAUSE_MENU_ITEM_COUNT;
+        menuIndex = (menuIndex + PAUSE_MENU_ITEM_COUNT - 1) % PAUSE_MENU_ITEM_COUNT;
     }
     if (PSPInput::GetButtonDown(PSP_CTRL_DOWN)) {
-        pauseMenuIndex = (pauseMenuIndex + 1) % PAUSE_MENU_ITEM_COUNT;
+        menuIndex = (menuIndex + 1) % PAUSE_MENU_ITEM_COUNT;
     }
     
     if (PSPInput::GetButtonDown(PSP_CTRL_CROSS)) {
-        switch (pauseMenuIndex) {
+        switch (menuIndex) {
             case 0:
                 SwitchScreen(Screen::Game);
                 break;
@@ -110,13 +111,16 @@ void Application::DoPauseMenu() {
                 game.NewGame();
                 SwitchScreen(Screen::Game);
                 break;
+            case 5:
+                sceKernelExitGame();
+                break;
         }
     }
 
     useSpritesheet();
     drawString("Threes", 240, 10, HEXCOLOR(0x000000), TextAlignment::Center);
     for (int i = 0; i < PAUSE_MENU_ITEM_COUNT; i++) {
-        drawString(PAUSE_MENU[i], 240, 60 + 32 * i, (pauseMenuIndex == i) ? HEXCOLOR(0x01CCFE) : HEXCOLOR(0x75555B), TextAlignment::Center);
+        drawString(PAUSE_MENU[i], 240, 60 + 32 * i, (menuIndex == i) ? HEXCOLOR(0x01CCFE) : HEXCOLOR(0x75555B), TextAlignment::Center);
     }
 }
 
