@@ -22,11 +22,11 @@ An unofficial implementation of the [Threes Game](http://playthrees.com/) for PS
 ![](screenshots/screenshot2.png)
 ![](screenshots/screenshot3.png)
 
-## Installation
+## Download & Installation
 
 You need a PSP that can run homebrew games.
 
-1. Download the `EBOOT.PBP` file from ]here](https://github.com/marian42/threes-psp/releases/latest/).
+1. Download the `EBOOT.PBP` file from [here](https://github.com/marian42/threes-psp/releases/latest/).
 2. Create the folder `/PSP/GAME/Threes/` on your Memory Stick
 3. Move the `EBOOT.PBP` file into that folder
 
