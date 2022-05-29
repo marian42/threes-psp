@@ -49,6 +49,8 @@ private:
     bool waitForButtonRelease = false;
 
     int score;
+
+    float currentSecondProgress = 0.0f;
     
 
     void drawCard(int cardX, int cardY);

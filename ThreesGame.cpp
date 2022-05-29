@@ -77,6 +77,12 @@ void ThreesGame::UpdateGameplay() {
             this->effectAmount = 1.0f;
         }
     }
+
+    this->currentSecondProgress += 1.0f / 60.0f;
+    if (this->currentSecondProgress > 1.0f) {
+        Application::instance.GetStatistics()->secondsPlayed++;
+        this->currentSecondProgress -= 1.0f;
+    }
 }
 
 void ThreesGame::Draw() {
