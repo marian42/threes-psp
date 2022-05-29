@@ -21,7 +21,9 @@ static const GlyphCoordinates GLYPHS[] = {
 	GlyphCoordinates(0,  104, 26, 26),
 	GlyphCoordinates(26, 104, 26, 26),
 	GlyphCoordinates(52, 104, 26, 26),
-	GlyphCoordinates(78, 104, 26, 26)
+	GlyphCoordinates(78, 104, 26, 26),
+	GlyphCoordinates(130, 104, 50, 26),
+	GlyphCoordinates(180, 104, 50, 26)
 };
 
 typedef struct {

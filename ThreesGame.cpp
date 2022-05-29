@@ -125,27 +125,27 @@ void ThreesGame::Draw() {
         DrawNextCard();
     }
 
-    char scoreString[10];
-
     int actualScore = this->grid.GetScore();
 
     if (actualScore > this->score) {
         this->score += (actualScore - this->score) / 16 + 1;
     }
 
-    sprintf(scoreString, "%d", this->score);
-
-    useSpritesheet();
-    drawString(scoreString, 470, 8, 0xFF7E8271, TextAlignment::Right);
-
     int highscore = Application::instance.GetStatistics()->highscore;
     if (highscore == this->grid.GetScore()) {
         highscore = this->score;
     }
 
-    sprintf(scoreString, "%d", highscore);
+    if (Application::instance.GetOptions()->showScore) {
+        char scoreString[10];
+        sprintf(scoreString, "%d", this->score);
 
-    drawString(scoreString, 470, 32, 0x777E8271, TextAlignment::Right);
+        useSpritesheet();
+        drawString(scoreString, 470, 8, 0xFF7E8271, TextAlignment::Right);
+
+        sprintf(scoreString, "%d", highscore);
+        drawString(scoreString, 470, 32, 0x777E8271, TextAlignment::Right);
+    }
 
     if (this->grid.IsGameOver()) {
         int offset = (int)((1.0f - ease(clamp((this->timeSinceLastMove - 1.5f) / 0.7f))) * 40.0f);

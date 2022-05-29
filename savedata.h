@@ -8,6 +8,11 @@ struct Statistics {
     int highestPiece = 0;
 };
 
+struct GameOptions {
+    bool holdToMove = true;
+    bool showScore = false;
+};
+
 struct Savedata {
     Statistics stats;
 
@@ -17,4 +22,6 @@ struct Savedata {
     int deckCardsRemaining;
     int highestPossibleCard;
     int lowerstPossibleCard;
+
+    GameOptions options;
 };

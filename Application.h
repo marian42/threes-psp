@@ -10,7 +10,8 @@ enum Screen {
     GameComplete,
     Settings,
     Stats,
-    About
+    About,
+    Options
 };
 
 class Application {
@@ -39,6 +40,7 @@ public:
         this->currentScreen = newScreen;
 
         switch (newScreen) {
+            case Screen::Options:
             case Screen::PauseMenu:
                 menuIndex = 0;
                 break;
@@ -61,6 +63,10 @@ public:
         return &savedata;
     }
 
+    GameOptions* GetOptions() {
+        return &savedata.options;
+    }
+
 private:
     Screen currentScreen;
     
@@ -75,6 +81,8 @@ private:
     void DoStatsScreen();
     
     void DoAboutScreen();
+
+    void DoOptionsScreen();
 
     Savedata savedata;
 };

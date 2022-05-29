@@ -10,7 +10,9 @@ enum Glyph {
 	Cross,
 	Circle,
 	Square,
-	Triangle
+	Triangle,
+	ToggleOff,
+	ToggleOn
 };
 
 

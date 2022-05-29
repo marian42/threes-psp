@@ -76,6 +76,9 @@ void Application::Update() {
         case Screen::GameComplete:
             DoGameOverScreen();
             break;
+        case Screen::Options:
+            DoOptionsScreen();
+            break;
     }
 
     sceGuFinish();
@@ -118,7 +121,7 @@ void Application::DoPauseMenu() {
                 SwitchScreen(Screen::Game);
                 break;
             case 2:
-                // Options
+                SwitchScreen(Screen::Options);
                 break;
             case 3:
                 SwitchScreen(Screen::Stats);
@@ -139,7 +142,7 @@ void Application::DoPauseMenu() {
     useSpritesheet();
     drawString("Threes", 240, 10, HEXCOLOR(0x000000), TextAlignment::Center);
     for (int i = 0; i < PAUSE_MENU_ITEM_COUNT; i++) {
-        drawString(PAUSE_MENU[i], 240, 40 + 28 * i, (menuIndex == i) ? HEXCOLOR(0x01CCFE) : HEXCOLOR(0x75555B), TextAlignment::Center);
+        drawString(PAUSE_MENU[i], 240, 46 + 26 * i, (menuIndex == i) ? HEXCOLOR(0x01CCFE) : HEXCOLOR(0x75555B), TextAlignment::Center);
     }
 
     drawGlyph(Glyph::Cross, 340, 240);
@@ -188,6 +191,58 @@ void Application::DoAboutScreen() {
     drawString("The source code for this project is", 20, 120, HEXCOLOR(0x000000));
     drawString("available at github.com/marian42/threes-psp.", 20, 150, HEXCOLOR(0x000000));
 
+    drawGlyph(Glyph::Circle, 330, 240);
+    drawString("Back", 366, 240, HEXCOLOR(0x7E7E7E), TextAlignment::Left);
+}
+
+void Application::DoOptionsScreen() {
+    if (PSPInput::GetButtonDown(PSP_CTRL_CIRCLE)) {
+        Save(true);
+        SwitchScreen(Screen::PauseMenu);
+    }
+
+    constexpr int OPTIONS_MENU_ITEM_COUNT = 2;
+
+    if (PSPInput::GetButtonDown(PSP_CTRL_UP)) {
+        menuIndex = (menuIndex + OPTIONS_MENU_ITEM_COUNT - 1) % OPTIONS_MENU_ITEM_COUNT;
+    }
+
+    if (PSPInput::GetButtonDown(PSP_CTRL_DOWN)) {
+        menuIndex = (menuIndex + 1) % OPTIONS_MENU_ITEM_COUNT;
+    }
+
+    bool* currentOption;
+    switch (menuIndex) {
+        case 0: currentOption = &savedata.options.holdToMove;
+        break;
+
+        case 1: currentOption = &savedata.options.showScore;
+        break;
+    }
+
+    if (PSPInput::GetButtonDown(PSP_CTRL_CROSS)) {
+        *currentOption = !(*currentOption);
+    }
+
+    if (PSPInput::GetButtonDown(PSP_CTRL_LEFT)) {
+        *currentOption = false;
+    }
+
+    if (PSPInput::GetButtonDown(PSP_CTRL_RIGHT)) {
+        *currentOption = true;
+    }
+
+    useSpritesheet();
+    drawString("Options", 240, 20, HEXCOLOR(0x000000), TextAlignment::Center);
+
+    drawString("Hold to move", 40, 60, (menuIndex == 0) ? HEXCOLOR(0x01CCFE) : HEXCOLOR(0x75555B));
+    drawGlyph(savedata.options.holdToMove ? Glyph::ToggleOn : ToggleOff, 360, 60);
+
+    drawString("Show score during gameplay", 40, 90, (menuIndex == 1) ? HEXCOLOR(0x01CCFE) : HEXCOLOR(0x75555B));
+    drawGlyph(savedata.options.showScore ? Glyph::ToggleOn : ToggleOff, 360, 90);
+        
+    drawGlyph(Glyph::Cross, 210, 240);
+    drawString("Toggle", 246, 240, HEXCOLOR(0x7E7E7E), TextAlignment::Left);
     drawGlyph(Glyph::Circle, 330, 240);
     drawString("Back", 366, 240, HEXCOLOR(0x7E7E7E), TextAlignment::Left);
 }
