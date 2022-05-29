@@ -7,7 +7,8 @@ enum Screen {
     Game,
     PauseMenu,
     GameComplete,
-    Settings
+    Settings,
+    Stats
 };
 
 
@@ -77,6 +78,8 @@ private:
     void DoPauseMenu();
 
     void DoGameOverScreen();
+
+    void DoStatsScreen();
 
     Savedata savedata;
 };

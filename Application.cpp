@@ -66,6 +66,9 @@ void Application::Update() {
         case Screen::PauseMenu:
             DoPauseMenu();
             break;
+        case Screen::Stats:
+            DoStatsScreen();
+            break;
         case Screen::GameComplete:
             DoGameOverScreen();
             break;
@@ -110,6 +113,9 @@ void Application::DoPauseMenu() {
                 game.NewGame();
                 SwitchScreen(Screen::Game);
                 break;
+            case 3:
+                SwitchScreen(Screen::Stats);
+                break;
             case 5:
                 Save();
                 break;
@@ -150,6 +156,80 @@ void Application::DoGameOverScreen() {
     
     drawString("Highscore:", 120, 130, HEXCOLOR(0x018BAA), TextAlignment::Left);
     drawString(highscoreString, 360, 130, score == this->GetStatistics()->highscore ? HEXCOLOR(0xFF002E) : HEXCOLOR(0x7E7E7E), TextAlignment::Right);
+}
+
+void drawCard(int card, int x, int y) {    
+    VERT* v = (VERT*)sceGuGetMemory(sizeof(VERT) * 2);
+
+    int tx = (card % 4) * 64;
+    int ty = (card / 4) * 64;
+
+    VERT* v0 = &v[0];
+    VERT* v1 = &v[1];
+    
+    v0->s = (float)(tx);
+    v0->t = (float)(ty);
+    v0->c = 0xFFFFFFFF;
+    v0->x = x;
+    v0->y = y;
+    v0->z = 0.0f;
+
+    v1->s = (float)(tx + 64);
+    v1->t = (float)(ty + 64);
+    v1->c = 0xFFFFFFFF;
+    v1->x = x + 64.0f;
+    v1->y = y + 64.0f;
+    v1->z = 0.0f;
+
+    sceGumDrawArray(GU_SPRITES, GU_TEXTURE_32BITF | GU_COLOR_8888 | GU_VERTEX_32BITF | GU_TRANSFORM_2D,  2, 0, v );
+}
+
+void Application::DoStatsScreen() {
+    if (PSPInput::GetButtonDown(PSP_CTRL_START | PSP_CTRL_CIRCLE | PSP_CTRL_CROSS)) {
+        SwitchScreen(Screen::PauseMenu);
+    }
+
+    useSpritesheet();
+
+    char valueString[10];
+
+    constexpr int LEFT = 40;
+    constexpr int RIGHT = 480 - LEFT;
+    constexpr int SPACING = 26;
+
+    drawString("Statistics", 240, 20, HEXCOLOR(0x000000), TextAlignment::Center);
+
+    drawString("Highscore:", LEFT, 46 + 0 * SPACING, HEXCOLOR(0x018BAA), TextAlignment::Left);
+    sprintf(valueString, "%d", this->GetStatistics()->highscore);
+    drawString(valueString, RIGHT, 46 + 0 * SPACING, HEXCOLOR(0xFF002E), TextAlignment::Right);
+   
+    drawString("Games played:", LEFT, 46 + 1 * SPACING, HEXCOLOR(0x018BAA), TextAlignment::Left);
+    sprintf(valueString, "%d", this->GetStatistics()->gamesPlayed);
+    drawString(valueString, RIGHT, 46 + 1 * SPACING, HEXCOLOR(0xFF002E), TextAlignment::Right);
+   
+    drawString("Total moves:", LEFT, 46 + 2 * SPACING, HEXCOLOR(0x018BAA), TextAlignment::Left);
+    sprintf(valueString, "%d", this->GetStatistics()->moves);
+    drawString(valueString, RIGHT, 46 + 2 * SPACING, HEXCOLOR(0xFF002E), TextAlignment::Right);
+
+    drawString("Time played:", LEFT, 46 + 3 * SPACING, HEXCOLOR(0x018BAA), TextAlignment::Left);
+    int hours = this->GetStatistics()->secondsPlayed / 3600;
+    int minutes = (this->GetStatistics()->secondsPlayed / 60) % 60;
+    if (hours == 0)
+    {
+        sprintf(valueString, "%d minutes", minutes);
+    } else if (hours == 1) {
+        sprintf(valueString, "1 hour, %d minutes", minutes);
+    } else {
+        sprintf(valueString, "%d hours, %d minutes", hours, minutes);
+    }
+    drawString(valueString, RIGHT, 46 + 3 * SPACING, HEXCOLOR(0xFF002E), TextAlignment::Right);
+
+    drawString("Pieces unlocked:", LEFT, 46 + 4 * SPACING, HEXCOLOR(0x018BAA), TextAlignment::Left);
+
+    useCardsTexture();
+    for (int i = 3; i <= this->GetStatistics()->highestPiece; i++) {
+        drawCard(i, RIGHT - this->GetStatistics()->highestPiece * 64 - 60 + i * 64, 46 + 5 * SPACING);
+    }
 }
 
 char nameOptions[][20] = { "0000","0001","0002", "0003", "0004", "" };
