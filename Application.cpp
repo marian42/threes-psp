@@ -9,7 +9,9 @@
 #include <psputility.h>
 
 #include "text.h"
+#include "utils.h"
 #include "img/icon0.c"
+#include "img/cards.c"
 
 #define BUF_WIDTH (512)
 #define SCR_WIDTH (480)

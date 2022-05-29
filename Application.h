@@ -3,6 +3,7 @@
 #include "ThreesGame.h"
 #include "input.h"
 #include "savedata.h"
+#include <pspkernel.h>
 
 enum Screen {
     Game,

@@ -66,8 +66,7 @@ private:
 
     int score;
 
-    float currentSecondProgress = 0.0f;
-    
+    float currentSecondProgress = 0.0f;    
 
     void drawCard(int cardX, int cardY);
     
