@@ -135,7 +135,12 @@ void ThreesGame::Draw() {
     useSpritesheet();
     drawString(scoreString, 470, 8, 0xFF7E8271, TextAlignment::Right);
 
-    sprintf(scoreString, "%d", Application::instance.GetStatistics()->highscore);
+    int highscore = Application::instance.GetStatistics()->highscore;
+    if (highscore == this->grid.GetScore()) {
+        highscore = this->score;
+    }
+
+    sprintf(scoreString, "%d", highscore);
 
     drawString(scoreString, 470, 32, 0x777E8271, TextAlignment::Right);
 }
