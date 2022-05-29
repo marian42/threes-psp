@@ -5,6 +5,7 @@
 #include <pspgum.h>
 #include <pspdisplay.h>
 #include <cstdio>
+#include <cstring>
 #include <psputility.h>
 
 #include "text.h"
@@ -131,6 +132,9 @@ void Application::DoPauseMenu() {
     for (int i = 0; i < PAUSE_MENU_ITEM_COUNT; i++) {
         drawString(PAUSE_MENU[i], 240, 40 + 28 * i, (menuIndex == i) ? HEXCOLOR(0x01CCFE) : HEXCOLOR(0x75555B), TextAlignment::Center);
     }
+
+    drawGlyph(Glyph::Cross, 340, 240);
+    drawString("Select", 376, 240, HEXCOLOR(0x7E7E7E), TextAlignment::Left);
 }
 
 void Application::DoGameOverScreen() {
@@ -156,6 +160,9 @@ void Application::DoGameOverScreen() {
     
     drawString("Highscore:", 120, 130, HEXCOLOR(0x018BAA), TextAlignment::Left);
     drawString(highscoreString, 360, 130, score == this->GetStatistics()->highscore ? HEXCOLOR(0xFF002E) : HEXCOLOR(0x7E7E7E), TextAlignment::Right);
+
+    drawGlyph(Glyph::Cross, 330, 240);
+    drawString("New Game", 366, 240, HEXCOLOR(0x7E7E7E), TextAlignment::Left);
 }
 
 void drawCard(int card, int x, int y) {    
@@ -225,6 +232,9 @@ void Application::DoStatsScreen() {
     drawString(valueString, RIGHT, 46 + 3 * SPACING, HEXCOLOR(0xFF002E), TextAlignment::Right);
 
     drawString("Pieces unlocked:", LEFT, 46 + 4 * SPACING, HEXCOLOR(0x018BAA), TextAlignment::Left);
+
+    drawGlyph(Glyph::Cross, 340, 240);
+    drawString("Back", 376, 240, HEXCOLOR(0x7E7E7E), TextAlignment::Left);
 
     useCardsTexture();
     for (int i = 3; i <= this->GetStatistics()->highestPiece; i++) {

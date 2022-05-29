@@ -143,6 +143,12 @@ void ThreesGame::Draw() {
     sprintf(scoreString, "%d", highscore);
 
     drawString(scoreString, 470, 32, 0x777E8271, TextAlignment::Right);
+
+    if (this->grid.IsGameOver()) {
+        int offset = (int)((1.0f - this->effectAmount) * 40.0f);
+        drawGlyph(Glyph::Cross, 369, 240 + offset);
+        drawString("Continue", 396, 240 + offset, HEXCOLOR(0x7E7E7E), TextAlignment::Left);
+    }
 }
 
 void ThreesGame::drawCard(int cardX, int cardY) {
