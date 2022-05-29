@@ -36,6 +36,17 @@ public:
     int GetScore() {
         return this->grid.GetScore();
     }
+    
+    void LoadGame(const Savedata* savedata) {
+        this->grid.LoadFromSaveData(savedata);
+        this->previewAmount = 0.0f;
+        this->effectAmount = 0.0f;
+        this->score = this->grid.GetScore();
+    }
+
+    void SaveGame(Savedata* savedata) {
+        this->grid.StoreToSavedata(savedata);
+    }
 
 private:
     ThreesGrid grid;
@@ -62,5 +73,4 @@ private:
     void DrawNextCard();
 
     void DrawPreviewCard(int index, float x, float y, float opacity);
-
 };

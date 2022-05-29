@@ -2,6 +2,7 @@
 
 #include "utils.h"
 #include <math.h>
+#include "savedata.h"
 
 constexpr int DEFAULT_DECK[] = {1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3};
 constexpr int DEFAULT_DECK_SIZE = 12;
@@ -145,8 +146,11 @@ class ThreesGrid {
 private:
     int data[16];
 
-    int deck[20];
+    int deck[14];
     int deckCardsRemaining;
+
+    int highestPossibleCard;
+    int lowerstPossibleCard;
 
     bool possibleMoves[4];
 
@@ -178,6 +182,8 @@ public:
 
         UpdatePreviews();
     }
+
+    void LoadFromSaveData(const Savedata* savedata);
 
     void DebugDraw(int globalX, int globalY) {
         for (int x = 0; x < 4; x++) {
@@ -325,8 +331,15 @@ public:
         return this->score;
     }
 
-    int highestPossibleCard;
-    int lowerstPossibleCard;
+    int GetHighestPossibleCard() {
+        return this->highestPossibleCard;
+    }
+
+    int GetLowestPossibleCard() {
+        return this->lowerstPossibleCard;
+    }
+
+    void StoreToSavedata(Savedata* savedata);
 
 private:
     void AddToDeck(int piece) {

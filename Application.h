@@ -2,6 +2,7 @@
 
 #include "ThreesGame.h"
 #include "input.h"
+#include "savedata.h"
 
 enum Screen {
     Game,
@@ -9,19 +10,6 @@ enum Screen {
     GameComplete,
     Settings,
     Stats
-};
-
-
-struct Statistics {
-    int highscore = 0;
-    int gamesPlayed = 0;
-    int moves = 0;
-    int secondsPlayed = 0;
-    int highestPiece = 0;
-};
-
-struct Savedata {
-    Statistics stats;
 };
 
 class Application {
@@ -33,7 +21,11 @@ public:
         Initialize();
         Load();
         this->currentScreen = Screen::Game;
-        game.NewGame();
+        if (this->savedata.containsInProgressGame) {
+            game.LoadGame(&this->savedata);
+        } else {
+            game.NewGame();
+        }
 
         while (true) {
             Update();
@@ -56,7 +48,7 @@ public:
 
     static SceKernelUtilsMt19937Context sceKernelUtilsMt19937Context;
 
-    void Save();
+    void Save(bool saveCurrentGame);
 
     void Load();
 

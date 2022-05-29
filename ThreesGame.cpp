@@ -33,7 +33,7 @@ void ThreesGame::UpdateGameplay() {
     }
 
     if (PSPInput::GetButtonDown(PSP_CTRL_CROSS | PSP_CTRL_START) && grid.IsGameOver()) {
-        Application::instance.Save();
+        Application::instance.Save(false);
         Application::instance.SwitchScreen(Screen::GameComplete);
         return;
     }
@@ -370,9 +370,9 @@ void ThreesGame::DrawNextCard() {
     if (this->grid.PeekDeck() < 4) {
         this->DrawPreviewCard(this->grid.PeekDeck(), left, 120, opacity);
     } else {
-        int numberOfOptions = this->grid.highestPossibleCard - this->grid.lowerstPossibleCard + 1;
+        int numberOfOptions = this->grid.GetHighestPossibleCard() - this->grid.GetLowestPossibleCard() + 1;
         for (int i = 0; i < numberOfOptions; i++) {                
-            this->DrawPreviewCard(this->grid.lowerstPossibleCard + i, left, 136 - numberOfOptions * 16 + i * 32, opacity);
+            this->DrawPreviewCard(this->grid.GetLowestPossibleCard() + i, left, 136 - numberOfOptions * 16 + i * 32, opacity);
         }
     }
 }

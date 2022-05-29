@@ -117,10 +117,10 @@ void Application::DoPauseMenu() {
                 SwitchScreen(Screen::Stats);
                 break;
             case 5:
-                Save();
+                Save(true);
                 break;
             case 6:
-                Save();
+                Save(true);
                 sceKernelExitGame();
                 break;
         }
@@ -260,7 +260,7 @@ bool RunSaveDataUtility(PspUtilitySavedataMode mode) {
 	strcpy(dialog.fileName, "DATA.BIN");
 
 	dialog.dataBuf = malloc(SAVEDATASIZE);
-    *((Savedata*)dialog.dataBuf) = *Application::instance.GetSavedata();
+    memcpy(dialog.dataBuf, Application::instance.GetSavedata(), SAVEDATASIZE);
 	dialog.dataBufSize = SAVEDATASIZE;
 	dialog.dataSize = SAVEDATASIZE;
 
@@ -331,7 +331,7 @@ bool RunSaveDataUtility(PspUtilitySavedataMode mode) {
         case PSP_UTILITY_DIALOG_FINISHED:
             done = true;
             break;
-                
+        
         case PSP_UTILITY_DIALOG_NONE:
             done = true;
             break;
@@ -345,8 +345,8 @@ bool RunSaveDataUtility(PspUtilitySavedataMode mode) {
         sceGuSwapBuffers();
     }
 
-    if (mode == PSP_UTILITY_SAVEDATA_AUTOLOAD || PSP_UTILITY_SAVEDATA_LISTLOAD) {
-        *Application::instance.GetSavedata() = *((Savedata*)dialog.dataBuf);
+    if (mode == PSP_UTILITY_SAVEDATA_AUTOLOAD || PSP_UTILITY_SAVEDATA_LISTLOAD) {        
+        memcpy(Application::instance.GetSavedata(), dialog.dataBuf, SAVEDATASIZE);
     }
 
     return dialog.base.result == 0;
@@ -356,6 +356,11 @@ void Application::Load() {
     RunSaveDataUtility(PSP_UTILITY_SAVEDATA_AUTOLOAD);
 }
 
-void Application::Save() {    
+void Application::Save(bool saveCurrentGame) {
+    if (saveCurrentGame) {
+        this->game.SaveGame(&this->savedata);
+    }
+    this->savedata.containsInProgressGame = saveCurrentGame;
+
     RunSaveDataUtility(PSP_UTILITY_SAVEDATA_AUTOSAVE);
 }
