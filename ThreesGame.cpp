@@ -15,22 +15,12 @@
 #include <math.h>
 
 void ThreesGame::UpdateGameplay() {
-    bool movementButtonPressed = false;
-    Direction directionPressed;
-
-    if (PSPInput::GetButtonPressed(PSP_CTRL_UP)) {
-        directionPressed = Direction::UP;
-        movementButtonPressed = true;
-    } else if (PSPInput::GetButtonPressed(PSP_CTRL_RIGHT)) {
-        directionPressed = Direction::RIGHT;
-        movementButtonPressed = true;
-    } else if (PSPInput::GetButtonPressed(PSP_CTRL_DOWN)) {
-        directionPressed = Direction::DOWN;
-        movementButtonPressed = true;
-    } else if (PSPInput::GetButtonPressed(PSP_CTRL_LEFT)) {            
-        directionPressed = Direction::LEFT;
-        movementButtonPressed = true;
+    this->currentSecondProgress += 1.0f / 60.0f;
+    if (this->currentSecondProgress > 1.0f) {
+        Application::instance.GetStatistics()->secondsPlayed++;
+        this->currentSecondProgress -= 1.0f;
     }
+    this->timeSinceLastMove += 1.0f / 60.0f;
 
     if (PSPInput::GetButtonDown(PSP_CTRL_CROSS | PSP_CTRL_START) && grid.IsGameOver()) {
         Application::instance.Save(false);
@@ -39,6 +29,63 @@ void ThreesGame::UpdateGameplay() {
     }
     if (PSPInput::GetButtonDown(PSP_CTRL_START)) {
         Application::instance.SwitchScreen(Screen::PauseMenu);
+    }
+
+    if (this->moveCommitted) {
+        this->previewAmount += 0.12;
+        if (this->previewAmount > 1.0) {
+            this->grid.ApplyMove(this->previewDirection);
+            this->lastMoveDirection = this->previewDirection;
+            this->previewAmount = 0;
+            this->waitForButtonRelease = true;
+            this->timeSinceLastMove = 0.0f;
+            this->effectAmount = 0.0f;
+            this->moveCommitted = false;
+        }
+        return;
+    }
+
+    bool movementButtonPressed = false;
+    Direction directionPressed;
+
+    if (Application::instance.GetOptions()->holdToMove) {
+        if (PSPInput::GetButtonPressed(PSP_CTRL_UP)) {
+            directionPressed = Direction::UP;
+            movementButtonPressed = true;
+        } else if (PSPInput::GetButtonPressed(PSP_CTRL_RIGHT)) {
+            directionPressed = Direction::RIGHT;
+            movementButtonPressed = true;
+        } else if (PSPInput::GetButtonPressed(PSP_CTRL_DOWN)) {
+            directionPressed = Direction::DOWN;
+            movementButtonPressed = true;
+        } else if (PSPInput::GetButtonPressed(PSP_CTRL_LEFT)) {            
+            directionPressed = Direction::LEFT;
+            movementButtonPressed = true;
+        }
+    } else {
+        if (PSPInput::GetButtonDown(PSP_CTRL_UP)) {
+            directionPressed = Direction::UP;
+            movementButtonPressed = true;
+        } else if (PSPInput::GetButtonDown(PSP_CTRL_RIGHT)) {
+            directionPressed = Direction::RIGHT;
+            movementButtonPressed = true;
+        } else if (PSPInput::GetButtonDown(PSP_CTRL_DOWN)) {
+            directionPressed = Direction::DOWN;
+            movementButtonPressed = true;
+        } else if (PSPInput::GetButtonDown(PSP_CTRL_LEFT)) {            
+            directionPressed = Direction::LEFT;
+            movementButtonPressed = true;
+        }
+        if (movementButtonPressed
+            && !this->moveCommitted
+            && (this->previewAmount == 0.0f || this->previewDirection == directionPressed)
+            && this->grid.IsMovePossible(directionPressed)
+            && !this->waitForButtonRelease) {
+            this->moveCommitted = true;
+            this->previewDirection = directionPressed;
+        } else {
+            movementButtonPressed = false;
+        }
     }
 
     if (this->waitForButtonRelease) {
@@ -59,6 +106,7 @@ void ThreesGame::UpdateGameplay() {
             this->waitForButtonRelease = true;
             this->timeSinceLastMove = 0.0f;
             this->effectAmount = 0.0f;
+            this->moveCommitted = false;
         }
     } else if (this->previewAmount <= 0) {
         this->previewDirection = directionPressed;
@@ -66,25 +114,13 @@ void ThreesGame::UpdateGameplay() {
         this->previewAmount -= 0.2;
     }
 
-    if (this->previewAmount < 0) {
-        this->previewAmount = 0;
-    } else if (this->previewAmount > 1.0) {
-        this->previewAmount = 1.0;
-    }
+    this->previewAmount = clamp(this->previewAmount);
 
     if (this->effectAmount < 1.0f) {
         this->effectAmount += this->previewAmount > 0.1f ? 0.2f : 0.07f;
         if (this->effectAmount > 1.0f) {
             this->effectAmount = 1.0f;
         }
-    }
-
-    this->timeSinceLastMove += 1.0f / 60.0f;
-
-    this->currentSecondProgress += 1.0f / 60.0f;
-    if (this->currentSecondProgress > 1.0f) {
-        Application::instance.GetStatistics()->secondsPlayed++;
-        this->currentSecondProgress -= 1.0f;
     }
 }
 

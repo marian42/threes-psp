@@ -20,6 +20,7 @@ public:
         this->previewAmount = 0.0f;
         this->effectAmount = 0.0f;
         this->timeSinceLastMove = 0.0f;
+        this->moveCommitted = false;
         this->score = this->grid.GetScore();
     }
 
@@ -42,6 +43,7 @@ public:
         this->grid.LoadFromSaveData(savedata);
         this->previewAmount = 0.0f;
         this->effectAmount = 0.0f;
+        this->moveCommitted = false;
         this->score = this->grid.GetScore();
     }
 
@@ -60,6 +62,7 @@ private:
     float timeSinceLastMove = 0;
 
     bool waitForButtonRelease = false;
+    bool moveCommitted = false;
 
     int score;
 
