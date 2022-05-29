@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <cstring>
 #include <psputility.h>
+#include <cstdlib>
 
 #include "text.h"
 #include "utils.h"
@@ -51,6 +52,21 @@ void Application::Initialize() {
     sceGuFinish();
     sceGuSync(0,0);
     sceGuDisplay(GU_TRUE);
+}
+
+void Application::Run() {
+    Initialize();
+    Load();
+    this->currentScreen = Screen::Game;
+    if (this->savedata.containsInProgressGame) {
+        game.LoadGame(&this->savedata);
+    } else {
+        game.NewGame();
+    }
+
+    while (true) {
+        Update();
+    }
 }
 
 void Application::Update() {
@@ -409,9 +425,9 @@ bool RunSaveDataUtility(PspUtilitySavedataMode mode) {
         useSpritesheet();
 
         if (mode == PSP_UTILITY_SAVEDATA_LISTSAVE || mode == PSP_UTILITY_SAVEDATA_AUTOSAVE) {
-            drawString("Saving progress...", 240, 120, HEXCOLOR(0x01CCFE), TextAlignment::Center);
+            drawString("Saving...", 240, 120, HEXCOLOR(0x01CCFE), TextAlignment::Center);
         } else {
-            drawString("Loading progress...", 240, 120, HEXCOLOR(0x01CCFE), TextAlignment::Center);
+            drawString("Loading...", 240, 120, HEXCOLOR(0x01CCFE), TextAlignment::Center);
         }
 
         sceGuFinish();

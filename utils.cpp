@@ -1,5 +1,10 @@
 #include "utils.h"
 #include "Application.h"
+#include <pspkernel.h>
+#include <pspgu.h>
+#include <time.h>
+#include <math.h>
+#include "img/cards.c"
 
 void initializeRNG() {
  	sceKernelUtilsMt19937Init(&Application::sceKernelUtilsMt19937Context, time(NULL));
@@ -32,4 +37,8 @@ void shuffleArray(int* array, int arraySize, int numberOfSwaps) {
         array[index1] = array[index2];
         array[index2] = swap;
     }
+}
+
+float ease(float value) {
+    return 0.5f - 0.5f * cos(value * 3.14159f);
 }

@@ -20,20 +20,7 @@ class Application {
 public:
     void Initialize();
     
-    void Run() {
-        Initialize();
-        Load();
-        this->currentScreen = Screen::Game;
-        if (this->savedata.containsInProgressGame) {
-            game.LoadGame(&this->savedata);
-        } else {
-            game.NewGame();
-        }
-
-        while (true) {
-            Update();
-        }
-    }
+    void Run();
 
     void Update();
 

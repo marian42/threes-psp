@@ -15,7 +15,6 @@ enum Glyph {
 	ToggleOn
 };
 
-
 void useSpritesheet();
 
 void drawString(const char* text, int x, int y, unsigned int color, TextAlignment alignment = TextAlignment::Left);
