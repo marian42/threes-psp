@@ -70,6 +70,9 @@ void Application::Update() {
         case Screen::Stats:
             DoStatsScreen();
             break;
+        case Screen::About:
+            DoAboutScreen();
+            break;
         case Screen::GameComplete:
             DoGameOverScreen();
             break;
@@ -114,8 +117,14 @@ void Application::DoPauseMenu() {
                 game.NewGame();
                 SwitchScreen(Screen::Game);
                 break;
+            case 2:
+                // Options
+                break;
             case 3:
                 SwitchScreen(Screen::Stats);
+                break;
+            case 4:
+                SwitchScreen(Screen::About);
                 break;
             case 5:
                 Save(true);
@@ -163,6 +172,24 @@ void Application::DoGameOverScreen() {
 
     drawGlyph(Glyph::Cross, 330, 240);
     drawString("New Game", 366, 240, HEXCOLOR(0x7E7E7E), TextAlignment::Left);
+}
+
+
+void Application::DoAboutScreen() {
+    if (PSPInput::GetButtonDown(PSP_CTRL_START | PSP_CTRL_CIRCLE | PSP_CTRL_CROSS)) {
+        SwitchScreen(Screen::PauseMenu);
+    }
+
+    useSpritesheet();
+    drawString("About", 240, 20, HEXCOLOR(0x000000), TextAlignment::Center);
+
+    drawString("This is an unofficial PSP implementation", 20, 60, HEXCOLOR(0x000000));
+    drawString("of the Threes game. Find it at threesgame.com.", 20, 90, HEXCOLOR(0x000000));
+    drawString("The source code for this project is", 20, 120, HEXCOLOR(0x000000));
+    drawString("available at github.com/marian42/threes-psp.", 20, 150, HEXCOLOR(0x000000));
+
+    drawGlyph(Glyph::Circle, 330, 240);
+    drawString("Back", 366, 240, HEXCOLOR(0x7E7E7E), TextAlignment::Left);
 }
 
 void drawCard(int card, int x, int y) {    
@@ -233,7 +260,7 @@ void Application::DoStatsScreen() {
 
     drawString("Pieces unlocked:", LEFT, 46 + 4 * SPACING, HEXCOLOR(0x018BAA), TextAlignment::Left);
 
-    drawGlyph(Glyph::Cross, 340, 240);
+    drawGlyph(Glyph::Circle, 340, 240);
     drawString("Back", 376, 240, HEXCOLOR(0x7E7E7E), TextAlignment::Left);
 
     useCardsTexture();

@@ -9,7 +9,8 @@ enum Screen {
     PauseMenu,
     GameComplete,
     Settings,
-    Stats
+    Stats,
+    About
 };
 
 class Application {
@@ -72,6 +73,8 @@ private:
     void DoGameOverScreen();
 
     void DoStatsScreen();
+    
+    void DoAboutScreen();
 
     Savedata savedata;
 };
