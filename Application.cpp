@@ -5,8 +5,10 @@
 #include <pspgum.h>
 #include <pspdisplay.h>
 #include <cstdio>
+#include <psputility.h>
 
 #include "text.h"
+#include "img/icon0.c"
 
 #define BUF_WIDTH (512)
 #define SCR_WIDTH (480)
@@ -127,7 +129,7 @@ void Application::DoGameOverScreen() {
     }
 
     useSpritesheet();
-    drawString("Game over", 240, 10, HEXCOLOR(0x000000), TextAlignment::Center);
+    drawString("Game Over", 240, 20, HEXCOLOR(0x000000), TextAlignment::Center);
 
     drawString("Score:", 120, 90, HEXCOLOR(0x018BAA), TextAlignment::Left);
     
@@ -150,4 +152,132 @@ void Application::OnGameComplete() {
     if (this->game.GetScore() > this->stats.highscore) {
         this->stats.highscore = this->game.GetScore();
     }
+}
+
+char nameOptions[][20] = { "0000","0001","0002", "0003", "0004", "" };
+constexpr int SAVEDATASIZE = 4;
+
+bool RunSaveDataUtility(PspUtilitySavedataMode mode) {
+    SceUtilitySavedataParam dialog;
+    PspUtilitySavedataListSaveNewData newData;
+
+	memset(&dialog, 0, sizeof(SceUtilitySavedataParam));
+	dialog.base.size = sizeof(SceUtilitySavedataParam);
+
+	dialog.base.language = PSP_SYSTEMPARAM_LANGUAGE_ENGLISH;
+	dialog.base.buttonSwap = PSP_UTILITY_ACCEPT_CROSS;
+	dialog.base.graphicsThread = 0x11;
+	dialog.base.accessThread = 0x13;
+	dialog.base.fontThread = 0x12;
+	dialog.base.soundThread = 0x10;
+
+	dialog.mode = mode;
+	dialog.overwrite = 1;
+
+	strcpy(dialog.gameName, "THREES111");
+	strcpy(dialog.saveName, "0000");
+
+	dialog.saveNameList = nameOptions;
+
+	strcpy(dialog.fileName, "DATA.BIN");
+
+	dialog.dataBuf = malloc(SAVEDATASIZE);
+    *((int*)dialog.dataBuf) = Application::instance.stats.highscore;
+	dialog.dataBufSize = SAVEDATASIZE;
+	dialog.dataSize = SAVEDATASIZE;
+    
+	if (mode == PSP_UTILITY_SAVEDATA_LISTSAVE || mode == PSP_UTILITY_SAVEDATA_AUTOSAVE)
+	{
+        strcpy(dialog.sfoParam.title, "Threes Savegame");
+
+        sprintf(dialog.sfoParam.savedataTitle, "Highscore: %d", Application::instance.stats.highscore);
+        sprintf(dialog.sfoParam.detail, "%d games played", Application::instance.stats.gamesPlayed);
+        
+        dialog.sfoParam.parentalLevel = 1;
+        
+        dialog.icon1FileData.buf = NULL;
+        dialog.icon1FileData.bufSize = 0;
+        dialog.icon1FileData.size = 0;
+
+        dialog.pic1FileData.buf = NULL;
+        dialog.pic1FileData.bufSize = 0;
+        dialog.pic1FileData.size = 0;
+
+        dialog.icon0FileData.buf = icon0;
+        dialog.icon0FileData.bufSize = size_icon0;
+        dialog.icon0FileData.size = size_icon0;
+        
+        dialog.snd0FileData.buf = NULL;
+        dialog.snd0FileData.bufSize = 0;
+        dialog.snd0FileData.size = 0;
+
+        dialog.newData = &newData;
+	}
+
+    sceGuFinish();
+    sceGuSync(0, 0);
+    sceDisplayWaitVblankStart();
+    sceGuSwapBuffers();
+	
+    sceUtilitySavedataInitStart(&dialog);
+
+    bool success = false;
+    bool done = false;
+
+    while (true) {        
+        sceGuStart(GU_DIRECT, list);
+        sceGuClear(GU_COLOR_BUFFER_BIT);
+        
+        useSpritesheet();
+
+        if (mode == PSP_UTILITY_SAVEDATA_LISTSAVE || mode == PSP_UTILITY_SAVEDATA_AUTOSAVE) {
+            drawString("Saving progress...", 240, 120, HEXCOLOR(0x01CCFE), TextAlignment::Center);
+        } else {
+            drawString("Loading progress...", 240, 120, HEXCOLOR(0x01CCFE), TextAlignment::Center);
+        }
+
+        sceGuFinish();
+        sceGuSync(0, 0);
+
+        switch(sceUtilitySavedataGetStatus()) {
+
+        case PSP_UTILITY_DIALOG_VISIBLE:
+            sceUtilitySavedataUpdate(1);
+            break;
+
+        case PSP_UTILITY_DIALOG_QUIT:
+            sceUtilitySavedataShutdownStart();
+            success = true;
+            break;
+            
+        case PSP_UTILITY_DIALOG_FINISHED:
+            done = true;
+            break;
+                
+        case PSP_UTILITY_DIALOG_NONE:
+            done = true;
+            break;
+        }
+
+        if (done) {
+            break;
+        }
+
+        sceDisplayWaitVblankStart();
+        sceGuSwapBuffers();
+    }
+
+    if (mode ==  PSP_UTILITY_SAVEDATA_LISTLOAD || mode == PSP_UTILITY_SAVEDATA_AUTOLOAD) {
+        Application::instance.test = *((int*)dialog.dataBuf);        
+    }
+
+    return dialog.base.result == 0;
+}
+
+void Application::Load() {
+    RunSaveDataUtility(PSP_UTILITY_SAVEDATA_AUTOLOAD);
+}
+
+void Application::Save() {    
+    RunSaveDataUtility(PSP_UTILITY_SAVEDATA_AUTOLOAD);
 }

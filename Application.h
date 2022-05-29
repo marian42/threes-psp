@@ -13,8 +13,8 @@ enum Screen {
 
 struct Stats {
     int highscore = 0;
+    int gamesPlayed = 0;
 };
-
 
 class Application {
 
@@ -23,6 +23,7 @@ public:
     
     void Run() {
         Initialize();
+        Load();
         this->currentScreen = Screen::Game;
         game.NewGame();
 
@@ -51,8 +52,12 @@ public:
     static SceKernelUtilsMt19937Context sceKernelUtilsMt19937Context;
 
     Stats stats;
-private:
 
+    void Save();
+
+    void Load();
+
+private:
     Screen currentScreen;
     
     ThreesGame game;
