@@ -87,18 +87,49 @@ void ThreesGame::UpdateGameplay() {
             movementButtonPressed = false;
         }
     }
+    
+    float analogX = PSPInput::GetAnalogX();
+    float analogY = PSPInput::GetAnalogY();
+    constexpr float ANALOG_DEADZONE = 0.2f;
+    bool analogInUse = abs(analogX) > ANALOG_DEADZONE || abs(analogY) > ANALOG_DEADZONE;
 
     if (this->waitForButtonRelease) {
         movementButtonPressed = false;
-        if (!PSPInput::GetButtonPressed(PSP_CTRL_DOWN | PSP_CTRL_LEFT | PSP_CTRL_UP | PSP_CTRL_RIGHT)) {
+        if (!PSPInput::GetButtonPressed(PSP_CTRL_DOWN | PSP_CTRL_LEFT | PSP_CTRL_UP | PSP_CTRL_RIGHT) && !analogInUse) {
             this->waitForButtonRelease = false;
         }
     }
 
-    if (!movementButtonPressed) {
+    if (!movementButtonPressed && analogInUse && !this->waitForButtonRelease) {
+        Direction analogStickDirection;
+
+        float target;
+        if (abs(analogX) > abs(analogY)) {
+            analogStickDirection = analogX > 0 ? Direction::RIGHT : Direction::LEFT;
+            target = abs(analogX);
+        } else {
+            analogStickDirection = analogY > 0 ? Direction::DOWN : Direction::UP;
+            target = abs(analogY);
+        }
+        target = (target - ANALOG_DEADZONE) / (1.0f - ANALOG_DEADZONE);
+
+        if (analogStickDirection == this->previewDirection) {
+            this->previewAmount = min(this->previewAmount + 0.2f, target);
+        } else {
+            this->previewAmount = clamp(this->previewAmount - 0.2f);
+            if (this->previewAmount == 0) {
+                this->previewDirection = analogStickDirection;
+            }
+        }
+
+        if (PSPInput::GetButtonDown(PSP_CTRL_CROSS) && analogStickDirection == this->previewDirection && this->previewAmount > 0.3 && this->grid.IsMovePossible(this->previewDirection)) {
+            this->moveCommitted = true;
+            this->waitForButtonRelease = true;
+        }
+    } else if (!movementButtonPressed) {
         this->previewAmount -= 0.1;
     } else if (this->previewDirection == directionPressed) {
-        this->previewAmount += 0.08;
+        this->previewAmount += 0.07;
         if (this->previewAmount > 1.0 && this->grid.IsMovePossible(this->previewDirection)) {
             this->grid.ApplyMove(this->previewDirection);
             this->lastMoveDirection = this->previewDirection;

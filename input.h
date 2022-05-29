@@ -17,6 +17,14 @@ public:
     static bool GetButtonDown(int button) {
         return instance.buttonsDown & button;
     }
+
+    static float GetAnalogX() {
+        return instance.padData.Lx / 128.0f - 1.0f;
+    }
+
+    static float GetAnalogY() {
+        return instance.padData.Ly / 128.0f - 1.0f;
+    }
     
 private:
     struct SceCtrlData padData;
