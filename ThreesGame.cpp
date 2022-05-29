@@ -14,6 +14,16 @@
 
 #include <math.h>
 
+void ThreesGame::ApplyMove() {
+    this->grid.ApplyMove(this->previewDirection);
+    this->lastMoveDirection = this->previewDirection;
+    this->previewAmount = 0;
+    this->waitForButtonRelease = true;
+    this->timeSinceLastMove = 0.0f;
+    this->effectAmount = 0.0f;
+    this->moveCommitted = false;
+}
+
 void ThreesGame::UpdateGameplay() {
     this->currentSecondProgress += 1.0f / 60.0f;
     if (this->currentSecondProgress > 1.0f) {
@@ -39,13 +49,7 @@ void ThreesGame::UpdateGameplay() {
     if (this->moveCommitted) {
         this->previewAmount += 0.12;
         if (this->previewAmount > 1.0) {
-            this->grid.ApplyMove(this->previewDirection);
-            this->lastMoveDirection = this->previewDirection;
-            this->previewAmount = 0;
-            this->waitForButtonRelease = true;
-            this->timeSinceLastMove = 0.0f;
-            this->effectAmount = 0.0f;
-            this->moveCommitted = false;
+            this->ApplyMove();
         }
         return;
     }
@@ -53,7 +57,9 @@ void ThreesGame::UpdateGameplay() {
     bool movementButtonPressed = false;
     Direction directionPressed;
 
-    if (Application::instance.GetOptions()->holdToMove) {
+    bool previewMode = PSPInput::GetButtonPressed(PSP_CTRL_LTRIGGER | PSP_CTRL_RTRIGGER);
+
+    if (Application::instance.GetOptions()->holdToMove || previewMode) {
         if (PSPInput::GetButtonPressed(PSP_CTRL_UP)) {
             directionPressed = Direction::UP;
             movementButtonPressed = true;
@@ -92,6 +98,15 @@ void ThreesGame::UpdateGameplay() {
             movementButtonPressed = false;
         }
     }
+
+    if (previewMode
+        && PSPInput::GetButtonDown(PSP_CTRL_CROSS)
+        && !this->moveCommitted
+        && this->previewAmount == 1.0f
+        && this->grid.IsMovePossible(this->previewDirection)
+        && !this->waitForButtonRelease) {
+        this->ApplyMove();
+    }
     
     bool analogInUse = false;
     float analogX;
@@ -111,7 +126,7 @@ void ThreesGame::UpdateGameplay() {
         }
     }
 
-    if (!movementButtonPressed && analogInUse && !this->waitForButtonRelease) {
+    if (analogInUse && !movementButtonPressed && !this->waitForButtonRelease) {
         Direction analogStickDirection;
 
         float target;
@@ -141,14 +156,8 @@ void ThreesGame::UpdateGameplay() {
         this->previewAmount -= 0.1;
     } else if (this->previewDirection == directionPressed) {
         this->previewAmount += 0.07;
-        if (this->previewAmount > 1.0 && this->grid.IsMovePossible(this->previewDirection)) {
-            this->grid.ApplyMove(this->previewDirection);
-            this->lastMoveDirection = this->previewDirection;
-            this->previewAmount = 0;
-            this->waitForButtonRelease = true;
-            this->timeSinceLastMove = 0.0f;
-            this->effectAmount = 0.0f;
-            this->moveCommitted = false;
+        if (this->previewAmount > 1.0 && this->grid.IsMovePossible(this->previewDirection) && !previewMode) {
+            this->ApplyMove();
         }
     } else if (this->previewAmount <= 0) {
         this->previewDirection = directionPressed;

@@ -77,4 +77,6 @@ private:
     void DrawNextCard();
 
     void DrawPreviewCard(int index, float x, float y, float opacity);
+
+    void ApplyMove();
 };
