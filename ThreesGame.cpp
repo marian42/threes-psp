@@ -88,10 +88,16 @@ void ThreesGame::UpdateGameplay() {
         }
     }
     
-    float analogX = PSPInput::GetAnalogX();
-    float analogY = PSPInput::GetAnalogY();
+    bool analogInUse = false;
+    float analogX;
+    float analogY;
     constexpr float ANALOG_DEADZONE = 0.2f;
-    bool analogInUse = abs(analogX) > ANALOG_DEADZONE || abs(analogY) > ANALOG_DEADZONE;
+
+    if (Application::instance.GetOptions()->enableAnalogStickPreview) {
+        analogX = PSPInput::GetAnalogX();
+        analogY = PSPInput::GetAnalogY();
+        analogInUse = abs(analogX) > ANALOG_DEADZONE || abs(analogY) > ANALOG_DEADZONE;
+    }    
 
     if (this->waitForButtonRelease) {
         movementButtonPressed = false;

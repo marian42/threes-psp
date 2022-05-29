@@ -201,7 +201,7 @@ void Application::DoOptionsScreen() {
         SwitchScreen(Screen::PauseMenu);
     }
 
-    constexpr int OPTIONS_MENU_ITEM_COUNT = 2;
+    constexpr int OPTIONS_MENU_ITEM_COUNT = 3;
 
     if (PSPInput::GetButtonDown(PSP_CTRL_UP)) {
         menuIndex = (menuIndex + OPTIONS_MENU_ITEM_COUNT - 1) % OPTIONS_MENU_ITEM_COUNT;
@@ -216,7 +216,10 @@ void Application::DoOptionsScreen() {
         case 0: currentOption = &savedata.options.holdToMove;
         break;
 
-        case 1: currentOption = &savedata.options.showScore;
+        case 1: currentOption = &savedata.options.enableAnalogStickPreview;
+        break;
+
+        case 2: currentOption = &savedata.options.showScore;
         break;
     }
 
@@ -238,8 +241,11 @@ void Application::DoOptionsScreen() {
     drawString("Hold to move", 40, 60, (menuIndex == 0) ? HEXCOLOR(0x01CCFE) : HEXCOLOR(0x75555B));
     drawGlyph(savedata.options.holdToMove ? Glyph::ToggleOn : ToggleOff, 360, 60);
 
-    drawString("Show score during gameplay", 40, 90, (menuIndex == 1) ? HEXCOLOR(0x01CCFE) : HEXCOLOR(0x75555B));
-    drawGlyph(savedata.options.showScore ? Glyph::ToggleOn : ToggleOff, 360, 90);
+    drawString("Enable analog stick preview", 40, 90, (menuIndex == 1) ? HEXCOLOR(0x01CCFE) : HEXCOLOR(0x75555B));
+    drawGlyph(savedata.options.enableAnalogStickPreview ? Glyph::ToggleOn : ToggleOff, 360, 90);
+
+    drawString("Show score during gameplay", 40, 120, (menuIndex == 2) ? HEXCOLOR(0x01CCFE) : HEXCOLOR(0x75555B));
+    drawGlyph(savedata.options.showScore ? Glyph::ToggleOn : ToggleOff, 360, 120);
         
     drawGlyph(Glyph::Cross, 210, 240);
     drawString("Toggle", 246, 240, HEXCOLOR(0x7E7E7E), TextAlignment::Left);

@@ -11,6 +11,7 @@ struct Statistics {
 struct GameOptions {
     bool holdToMove = true;
     bool showScore = false;
+    bool enableAnalogStickPreview = true;
 };
 
 struct Savedata {
