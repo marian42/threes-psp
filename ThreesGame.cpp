@@ -31,6 +31,11 @@ void ThreesGame::UpdateGameplay() {
         Application::instance.SwitchScreen(Screen::PauseMenu);
     }
 
+    if (this->moveCommitted && this->effectAmount < 1.0f) {
+        this->effectAmount = clamp(this->effectAmount + 0.2f);
+        return;
+    }
+
     if (this->moveCommitted) {
         this->previewAmount += 0.12;
         if (this->previewAmount > 1.0) {
