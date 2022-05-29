@@ -11,9 +11,16 @@ enum Screen {
 };
 
 
-struct Stats {
+struct Statistics {
     int highscore = 0;
     int gamesPlayed = 0;
+    int moves = 0;
+    int secondsPlayed = 0;
+    int highestPiece = 0;
+};
+
+struct Savedata {
+    Statistics stats;
 };
 
 class Application {
@@ -41,9 +48,6 @@ public:
             case Screen::PauseMenu:
                 menuIndex = 0;
                 break;
-            case Screen::GameComplete:
-                OnGameComplete();
-                break;
         }
     }
 
@@ -51,11 +55,17 @@ public:
 
     static SceKernelUtilsMt19937Context sceKernelUtilsMt19937Context;
 
-    Stats stats;
-
     void Save();
 
     void Load();
+
+    Statistics* GetStatistics() {
+        return &savedata.stats;
+    }
+
+    Savedata* GetSavedata() {
+        return &savedata;
+    }
 
 private:
     Screen currentScreen;
@@ -68,5 +78,5 @@ private:
 
     void DoGameOverScreen();
 
-    void OnGameComplete();
+    Savedata savedata;
 };

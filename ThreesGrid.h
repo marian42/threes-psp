@@ -152,6 +152,7 @@ private:
 
     MoveType movePreviews[4 * 16];
 
+    int score = 0;
     int highestPiece;
 
     CardEffect effects[16];
@@ -159,6 +160,7 @@ public:
 
     void Reset() {
         this->highestPiece = 3;
+        this->score = 0;
         this->CreateDeck();
         for (int i = 0; i < 16; i++) {
             if (i < 9) {
@@ -299,16 +301,8 @@ public:
             }
         }
 
-        UpdatePreviews();
-    }
-
-    int GetScore() {
-        int result = 0;
-        for (int i = 0; i < 16; i++) {
-            result += SCORE[this->data[i]];
-        }
-        
-        return result;
+        this->UpdatePreviews();
+        this->UpdateStats();
     }
 
     MoveType GetPreview(Direction direction, int x, int y) {
@@ -325,6 +319,10 @@ public:
     
     bool IsGameOver() {
         return !this->possibleMoves[0] && !this->possibleMoves[1] && !this->possibleMoves[2] && !this->possibleMoves[3];    
+    }
+
+    int GetScore() {
+        return this->score;
     }
 
     int highestPossibleCard;
@@ -372,4 +370,15 @@ private:
             }
         }
     }
+
+    int CalculateScore() {
+        int result = 0;
+        for (int i = 0; i < 16; i++) {
+            result += SCORE[this->data[i]];
+        }
+        
+        return result;
+    }
+
+    void UpdateStats();
 };

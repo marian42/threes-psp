@@ -85,9 +85,10 @@ void Application::DoPauseMenu() {
         "Options",
         "Stats",
         "About",
-        "Quit"
+        "Save",
+        "Save and quit"
     };
-    constexpr int PAUSE_MENU_ITEM_COUNT = 6;
+    constexpr int PAUSE_MENU_ITEM_COUNT = 7;
 
     if (PSPInput::GetButtonDown(PSP_CTRL_START | PSP_CTRL_CIRCLE)) {
         SwitchScreen(Screen::Game);
@@ -110,6 +111,10 @@ void Application::DoPauseMenu() {
                 SwitchScreen(Screen::Game);
                 break;
             case 5:
+                Save();
+                break;
+            case 6:
+                Save();
                 sceKernelExitGame();
                 break;
         }
@@ -118,7 +123,7 @@ void Application::DoPauseMenu() {
     useSpritesheet();
     drawString("Threes", 240, 10, HEXCOLOR(0x000000), TextAlignment::Center);
     for (int i = 0; i < PAUSE_MENU_ITEM_COUNT; i++) {
-        drawString(PAUSE_MENU[i], 240, 60 + 32 * i, (menuIndex == i) ? HEXCOLOR(0x01CCFE) : HEXCOLOR(0x75555B), TextAlignment::Center);
+        drawString(PAUSE_MENU[i], 240, 40 + 28 * i, (menuIndex == i) ? HEXCOLOR(0x01CCFE) : HEXCOLOR(0x75555B), TextAlignment::Center);
     }
 }
 
@@ -141,21 +146,14 @@ void Application::DoGameOverScreen() {
     drawString(scoreString, 360, 90, HEXCOLOR(0xFF002E), TextAlignment::Right);
 
     char highscoreString[10];
-    sprintf(highscoreString, "%d", this->stats.highscore);
+    sprintf(highscoreString, "%d", this->GetStatistics()->highscore);
     
     drawString("Highscore:", 120, 130, HEXCOLOR(0x018BAA), TextAlignment::Left);
-    drawString(highscoreString, 360, 130, score == this->stats.highscore ? HEXCOLOR(0xFF002E) : HEXCOLOR(0x7E7E7E), TextAlignment::Right);
-}
-
-
-void Application::OnGameComplete() {
-    if (this->game.GetScore() > this->stats.highscore) {
-        this->stats.highscore = this->game.GetScore();
-    }
+    drawString(highscoreString, 360, 130, score == this->GetStatistics()->highscore ? HEXCOLOR(0xFF002E) : HEXCOLOR(0x7E7E7E), TextAlignment::Right);
 }
 
 char nameOptions[][20] = { "0000","0001","0002", "0003", "0004", "" };
-constexpr int SAVEDATASIZE = 4;
+constexpr int SAVEDATASIZE = sizeof(Savedata);
 
 bool RunSaveDataUtility(PspUtilitySavedataMode mode) {
     SceUtilitySavedataParam dialog;
@@ -182,16 +180,16 @@ bool RunSaveDataUtility(PspUtilitySavedataMode mode) {
 	strcpy(dialog.fileName, "DATA.BIN");
 
 	dialog.dataBuf = malloc(SAVEDATASIZE);
-    *((int*)dialog.dataBuf) = Application::instance.stats.highscore;
+    *((Savedata*)dialog.dataBuf) = *Application::instance.GetSavedata();
 	dialog.dataBufSize = SAVEDATASIZE;
 	dialog.dataSize = SAVEDATASIZE;
-    
+
 	if (mode == PSP_UTILITY_SAVEDATA_LISTSAVE || mode == PSP_UTILITY_SAVEDATA_AUTOSAVE)
 	{
         strcpy(dialog.sfoParam.title, "Threes Savegame");
 
-        sprintf(dialog.sfoParam.savedataTitle, "Highscore: %d", Application::instance.stats.highscore);
-        sprintf(dialog.sfoParam.detail, "%d games played", Application::instance.stats.gamesPlayed);
+        sprintf(dialog.sfoParam.savedataTitle, "Highscore: %d", Application::instance.GetStatistics()->highscore);
+        sprintf(dialog.sfoParam.detail, "%d games played", Application::instance.GetStatistics()->gamesPlayed);
         
         dialog.sfoParam.parentalLevel = 1;
         
@@ -267,8 +265,8 @@ bool RunSaveDataUtility(PspUtilitySavedataMode mode) {
         sceGuSwapBuffers();
     }
 
-    if (mode ==  PSP_UTILITY_SAVEDATA_LISTLOAD || mode == PSP_UTILITY_SAVEDATA_AUTOLOAD) {
-        Application::instance.test = *((int*)dialog.dataBuf);        
+    if (mode == PSP_UTILITY_SAVEDATA_AUTOLOAD || PSP_UTILITY_SAVEDATA_LISTLOAD) {
+        *Application::instance.GetSavedata() = *((Savedata*)dialog.dataBuf);
     }
 
     return dialog.base.result == 0;
@@ -279,5 +277,5 @@ void Application::Load() {
 }
 
 void Application::Save() {    
-    RunSaveDataUtility(PSP_UTILITY_SAVEDATA_AUTOLOAD);
+    RunSaveDataUtility(PSP_UTILITY_SAVEDATA_AUTOSAVE);
 }

@@ -33,7 +33,9 @@ void ThreesGame::UpdateGameplay() {
     }
 
     if (PSPInput::GetButtonDown(PSP_CTRL_CROSS | PSP_CTRL_START) && grid.IsGameOver()) {
+        Application::instance.Save();
         Application::instance.SwitchScreen(Screen::GameComplete);
+        return;
     }
     if (PSPInput::GetButtonDown(PSP_CTRL_START)) {
         Application::instance.SwitchScreen(Screen::PauseMenu);
@@ -126,6 +128,10 @@ void ThreesGame::Draw() {
 
     useSpritesheet();
     drawString(scoreString, 470, 8, 0xFF7E8271, TextAlignment::Right);
+
+    sprintf(scoreString, "%d", Application::instance.GetStatistics()->highscore);
+
+    drawString(scoreString, 470, 32, 0x777E8271, TextAlignment::Right);
 }
 
 void ThreesGame::drawCard(int cardX, int cardY) {
