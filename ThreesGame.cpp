@@ -57,6 +57,7 @@ void ThreesGame::UpdateGameplay() {
             this->lastMoveDirection = this->previewDirection;
             this->previewAmount = 0;
             this->waitForButtonRelease = true;
+            this->timeSinceLastMove = 0.0f;
             this->effectAmount = 0.0f;
         }
     } else if (this->previewAmount <= 0) {
@@ -77,6 +78,8 @@ void ThreesGame::UpdateGameplay() {
             this->effectAmount = 1.0f;
         }
     }
+
+    this->timeSinceLastMove += 1.0f / 60.0f;
 
     this->currentSecondProgress += 1.0f / 60.0f;
     if (this->currentSecondProgress > 1.0f) {
@@ -145,7 +148,7 @@ void ThreesGame::Draw() {
     drawString(scoreString, 470, 32, 0x777E8271, TextAlignment::Right);
 
     if (this->grid.IsGameOver()) {
-        int offset = (int)((1.0f - this->effectAmount) * 40.0f);
+        int offset = (int)((1.0f - ease(clamp((this->timeSinceLastMove - 1.5f) / 0.7f))) * 40.0f);
         drawGlyph(Glyph::Cross, 369, 240 + offset);
         drawString("Continue", 396, 240 + offset, HEXCOLOR(0x7E7E7E), TextAlignment::Left);
     }
@@ -178,7 +181,8 @@ void ThreesGame::drawCard(int cardX, int cardY) {
         sizeX *= size;
         x += (1.0f - size) * 0.5f;
     } else if (effect == CardEffect::NewCard) {
-        float size = sin(this->effectAmount * 3.141459) * 0.45 + this->effectAmount;
+        float progress = clamp((this->timeSinceLastMove - ((cardX + cardY) * 0.05f)) / 0.3f);
+        float size = sin(progress * 3.141459) * 0.45 + progress;
         sizeX *= size;
         x += (1.0f - size) * 0.5f;
         sizeY *= size;

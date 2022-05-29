@@ -19,6 +19,7 @@ public:
         grid.Reset();
         this->previewAmount = 0.0f;
         this->effectAmount = 0.0f;
+        this->timeSinceLastMove = 0.0f;
         this->score = this->grid.GetScore();
     }
 
@@ -56,6 +57,7 @@ private:
 
     float previewAmount = 0;
     float effectAmount = 0;
+    float timeSinceLastMove = 0;
 
     bool waitForButtonRelease = false;
 
