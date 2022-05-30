@@ -2,7 +2,7 @@
 
 # Threes on the Playstation Portable
 
-An unofficial implementation of the [Threes Game](http://playthrees.com/) for PSP.
+An unofficial implementation of the [Threes Game](http://threesgame.com/) for PSP.
 
 ![](img/ICON0.PNG)
 
